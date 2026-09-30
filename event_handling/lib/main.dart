@@ -18,8 +18,10 @@ class SmartCampusApp extends StatelessWidget {
       ),
 
       home: const RegistrationScreen(
-      eventName: "Tech Fest 2026",
-    ),
+        eventName: "Tech Fest 2026",
+        eventType: "Paid",
+        eventFee: 300,
+      ),
     );
   }
 }

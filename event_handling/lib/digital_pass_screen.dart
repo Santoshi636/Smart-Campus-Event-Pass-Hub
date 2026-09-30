@@ -7,6 +7,9 @@ class DigitalPassScreen extends StatelessWidget {
   final String email;
   final String studentId;
   final String department;
+  final String eventType;
+  final double eventFee;
+  final String paymentStatus;
 
   const DigitalPassScreen({
     super.key,
@@ -15,6 +18,9 @@ class DigitalPassScreen extends StatelessWidget {
     required this.email,
     required this.studentId,
     required this.department,
+    required this.eventType,
+    required this.eventFee,
+    required this.paymentStatus,
   });
 
   @override
