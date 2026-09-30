@@ -26,185 +26,97 @@ class DigitalPassScreen extends StatelessWidget {
         appBar: AppBar(
         title:
         const Text("Digital Pass"),
-    centerTitle: true,
-    foregroundColor:
-    Colors.white,
-    flexibleSpace: Container(
-    decoration:
-    const BoxDecoration(
-    gradient:
-    LinearGradient(
-    colors: [
-    Color(0xff4A00E0),
-    Color(0xff8E2DE2),
-    ],
-    ),
-    ),
-    ),
-    ),
+        centerTitle: true,
+        foregroundColor: Colors.white,
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(colors: [Color(0xff4A00E0), Color(0xff8E2DE2),],),
+          ),
+        ),
+        ),
 
-    body: Center(
-    child: Container(
-    margin:
-    const EdgeInsets.all(20),
-    padding:
-    const EdgeInsets.all(20),
-    decoration:
-    BoxDecoration(
-    borderRadius:
-    BorderRadius
-        .circular(25),
-    gradient:
-    const LinearGradient(
-    colors: [
-    Color(0xff4A00E0),
-    Color(0xff8E2DE2),
-    ],
-    ),
-    ),
+      body: Center(
+        child: Container(
+          margin: const EdgeInsets.all(20),
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(25),
+            gradient: const LinearGradient(colors: [Color(0xff4A00E0), Color(0xff8E2DE2),],),
+          ),
 
-    child: Column(
-    mainAxisSize:
-    MainAxisSize.min,
-    children: [
-    const CircleAvatar(
-    radius: 40,
-    backgroundColor:
-    Colors.white,
-    child: Icon(
-    Icons.person,
-    size: 40,
-    color:
-    Colors.deepPurple,
-    ),
-    ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const CircleAvatar(
+                radius: 40,
+                backgroundColor:
+                Colors.white,
+                child: Icon(Icons.person, size: 40, color: Colors.deepPurple,),
+              ),
+              const SizedBox(height: 15),
+              Text(eventName, textAlign: TextAlign.center,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const Divider(
+                color: Colors.white,
+              ),
 
-    const SizedBox(
-    height: 15),
+              ListTile(
+                leading: const Icon(Icons.person, color: Colors.white,),
+                title: Text(name,
+                  style: const TextStyle(color: Colors.white,),
+                ),),
 
-    Text(
-    eventName,
-    textAlign:
-    TextAlign.center,
-    style:
-    const TextStyle(
-    color: Colors.white,
-    fontSize: 24,
-    fontWeight:
-    FontWeight.bold,
-    ),
-    ),
+              ListTile(
+                leading: const Icon(Icons.badge, color: Colors.white,),
+                title: Text(studentId,
+                  style: const TextStyle(color: Colors.white,),
+                ),),
 
-    const Divider(
-    color: Colors.white,
-    ),
+              ListTile(
+                leading: const Icon(Icons.school, color: Colors.white,),
+                title: Text(department,
+                  style: const TextStyle(color: Colors.white,),
+                ),),
 
-    ListTile(
-    leading:
-    const Icon(
-    Icons.person,
-    color:
-    Colors.white,
-    ),
-    title: Text(
-    name,
-    style:
-    const TextStyle(
-    color:
-    Colors.white,
-    ),
-    ),
-    ),
+              const SizedBox(height: 20),
+              Container(
+                color: Colors.white,
+                padding: const EdgeInsets.all(8),
+                child: QrImageView(
+                  data: '''
+                    Event: $eventName
+                    Name: $name
+                    Student ID: $studentId
+                    Department: $department
+                    ''',
+                  size: 180,
+                ),
+              ),
 
-    ListTile(
-    leading:
-    const Icon(
-    Icons.badge,
-    color:
-    Colors.white,
-    ),
-    title: Text(
-    studentId,
-    style:
-    const TextStyle(
-    color:
-    Colors.white,
-    ),
-    ),
-    ),
+              const SizedBox(height: 20),
 
-    ListTile(
-    leading:
-    const Icon(
-    Icons.school,
-    color:
-    Colors.white,
-    ),
-    title: Text(
-    department,
-    style:
-    const TextStyle(
-    color:
-    Colors.white,
-    ),
-    ),
-    ),
-
-    const SizedBox(
-    height: 15),
-
-    Container(
-    color: Colors.white,
-    padding:
-    const EdgeInsets
-        .all(8),
-    child: QrImageView(
-    data: '''
-Event: $eventName
-Name: $name
-Student ID: $studentId
-Department: $department
-''',
-    size: 180,
-    ),
-    ),
-
-    const SizedBox(
-    height: 15),
-
-    Container(
-    padding:
-    const EdgeInsets
-        .symmetric(
-    horizontal: 20,
-    vertical: 10,
-    ),
-    decoration:
-    BoxDecoration(
-    color:
-    Colors.green,
-    borderRadius:
-    BorderRadius
-        .circular(
-    25),
-    ),
-    child:
-    const Text(
-    "ENTRY APPROVED",
-    style:
-    TextStyle(
-    color: Colors
-        .white,
-    fontWeight:
-    FontWeight
-        .bold,
-    ),
-    ),
-    ),
-    ],
-    ),
-    ),
-    ),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10,),
+                decoration: BoxDecoration(
+                  color: Colors.green,
+                  borderRadius: BorderRadius.circular(25),
+                ),
+                child: const Text("ENTRY APPROVED",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
