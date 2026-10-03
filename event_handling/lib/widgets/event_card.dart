@@ -115,9 +115,7 @@ class EventCard extends StatelessWidget {
                         color: AppTheme.greyColor,
                       ),
                       const SizedBox(width: 8),
-                      Expanded(
-                        child: Text(location),
-                      ),
+                      Expanded(child: Text(location),),
                     ],
                   ),
                 ],

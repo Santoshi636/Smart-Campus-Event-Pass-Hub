@@ -61,8 +61,7 @@ class HomeScreen extends StatelessWidget {
 
             // CATEGORY TITLE
             const SectionTitle(
-              title: 'Categories',
-            ),
+              title: 'Categories',),
 
             const SizedBox(height: 15),
 

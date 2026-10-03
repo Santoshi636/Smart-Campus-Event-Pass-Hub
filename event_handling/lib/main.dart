@@ -18,8 +18,7 @@ class SmartCampusApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.deepPurple,
         scaffoldBackgroundColor: const Color(0xFFF7F7FB),
-        useMaterial3: true,
-      ),
+        useMaterial3: true,),
 
       // Your Member 1 Splash Screen
       home: const SplashScreen(),

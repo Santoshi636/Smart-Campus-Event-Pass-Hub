@@ -44,8 +44,7 @@ class CategoryItem extends StatelessWidget {
               style: const TextStyle(
                 fontSize: 12,
                 fontWeight: FontWeight.w500,
-              ),
-            ),
+              ),),
           ],
         ),
       ),

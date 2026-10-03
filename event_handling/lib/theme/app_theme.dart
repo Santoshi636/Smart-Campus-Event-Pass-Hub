@@ -45,8 +45,7 @@ class AppTheme {
       bodyMedium: TextStyle(
         fontSize: 14,
         color: greyColor,
-      ),
-    ),
+      ), ),
 
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
