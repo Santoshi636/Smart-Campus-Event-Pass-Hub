@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'Santoshi/registration_screen.dart';
-import 'Mrunali/screen/splash_screen.dart';
+import 'registration_screen.dart';
+import 'screen/splash_screen.dart';
 
 void main() {
   runApp(const SmartCampusApp());
@@ -16,9 +16,9 @@ class SmartCampusApp extends StatelessWidget {
       title: 'Smart Campus Event Hub',
 
       theme: ThemeData(
-        primarySwatch: Colors.indigo,
-        scaffoldBackgroundColor: Colors.white,
-      ),
+        primarySwatch: Colors.deepPurple,
+        scaffoldBackgroundColor: const Color(0xFFF7F7FB),
+        useMaterial3: true,),
 
       // Your Member 1 Splash Screen
       home: const SplashScreen(),
