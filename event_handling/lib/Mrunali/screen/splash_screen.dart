@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import '../theme/app_theme.dart';
 import 'home_screen.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -11,14 +10,11 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
-
   @override
   void initState() {
     super.initState();
 
     Timer(const Duration(seconds: 3), () {
-      if (!mounted) return;
-
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
@@ -31,53 +27,49 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.primaryColor,
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
 
-            // App logo
             Container(
-              height: 100,
               width: 100,
+              height: 100,
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: Colors.indigo,
                 borderRadius: BorderRadius.circular(25),
               ),
               child: const Icon(
-                Icons.event,
-                size: 55,
-                color: AppTheme.primaryColor,
+                Icons.event_available,
+                size: 60,
+                color: Colors.white,
               ),
             ),
 
             const SizedBox(height: 25),
 
             const Text(
-              'College Events',
+              'Smart Campus',
               style: TextStyle(
-                color: Colors.white,
-                fontSize: 28,
+                fontSize: 30,
                 fontWeight: FontWeight.bold,
+                color: Colors.indigo,
               ),
             ),
 
-            const SizedBox(height: 10),
+            const SizedBox(height: 8),
 
             const Text(
-              'Discover • Register • Attend',
+              'Event Pass & Hub',
               style: TextStyle(
-                color: Colors.white70,
-                fontSize: 15,
+                fontSize: 16,
+                color: Colors.grey,
               ),
             ),
 
-            const SizedBox(height: 40),
+            const SizedBox(height: 30),
 
-            const CircularProgressIndicator(
-              color: Colors.white,
-            ),
+            const CircularProgressIndicator(),
           ],
         ),
       ),
