@@ -160,8 +160,7 @@ class HomeScreen extends StatelessWidget {
               onTap: () {
                 // Member 2 can connect Event Details here.
               },
-            ),
-          ],
+            ),],
         ),
       ),
     );
