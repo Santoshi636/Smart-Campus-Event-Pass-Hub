@@ -39,8 +39,7 @@ class CategoryItem extends StatelessWidget {
               fontWeight: FontWeight.w600,
               fontSize: 14,
             ),
-          ),
-        ],
+          ),],
       ),
     );
   }

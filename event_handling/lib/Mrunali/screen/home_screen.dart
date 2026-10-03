@@ -1,13 +1,10 @@
 import 'package:flutter/material.dart';
-
 import '../widgets/category_item.dart';
 import '../widgets/custom_search_bar.dart';
-import '../widgets/event_card.dart';
 import '../widgets/section_title.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -24,7 +21,6 @@ class HomeScreen extends StatelessWidget {
 
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
-
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -33,12 +29,11 @@ class HomeScreen extends StatelessWidget {
             const Text(
               'Welcome! 👋',
               style: TextStyle(
-                fontSize: 26,
+                fontSize: 30,
                 fontWeight: FontWeight.bold,
-              ),
-            ),
+              ),),
 
-            const SizedBox(height: 5),
+            const SizedBox(height: 8),
 
             const Text(
               'Discover events happening on your campus.',
@@ -124,28 +119,7 @@ class HomeScreen extends StatelessWidget {
             const SizedBox(height: 12),
 
             // Only preview events
-            const EventCard(
-              title: 'Annual College Fest',
-              date: '15 October 2026',
-              location: 'College Auditorium',
-              icon: Icons.celebration,
-            ),
 
-            const EventCard(
-              title: 'Coding Competition',
-              date: '20 October 2026',
-              location: 'Computer Lab',
-              icon: Icons.computer,
-            ),
-
-            const EventCard(
-              title: 'Sports Day',
-              date: '25 October 2026',
-              location: 'College Ground',
-              icon: Icons.sports,
-            ),
-
-            const SizedBox(height: 20),
           ],
         ),
       ),

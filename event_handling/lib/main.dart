@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'registration_screen.dart';
-import 'screen/splash_screen.dart';
+import 'Santoshi/registration_screen.dart';
+import 'Mrunali/screen/splash_screen.dart';
 
 void main() {
   runApp(const SmartCampusApp());
