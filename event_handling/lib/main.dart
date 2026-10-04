@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'Mrunali/screen/splash_screen.dart';
+import 'Mrunali/splash_screen.dart';
 
 // Member 1 Import (e.g., Home / Event List)
-// import 'Member1/event_list_screen.dart';
+import 'Mrunali/home_screen.dart';
 
 // Member 2 Import (e.g., Event Details)
 // import 'Member2/event_details_screen.dart';
@@ -33,12 +33,13 @@ class SmartCampusApp extends StatelessWidget {
       ),
 
       // Set the initial route matching your routes table string
-      initialRoute: '/home',
+      initialRoute: '/splash',
 
       // Centralized Named Routes Table
       routes: {
         // Member 1 Route (SplashScreen added)
-        '/home': (context) => const SplashScreen(),
+        '/splash': (context) => const SplashScreen(),
+        '/home': (context) => const HomeScreen(),
 
         // Member 2 Route
         // '/event-details': (context) => const EventDetailsScreen(),

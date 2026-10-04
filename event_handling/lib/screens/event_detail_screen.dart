@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/event_model.dart';
-import '../registration_screen.dart';
-import '../theme/app_theme.dart';
+import '../Santoshi/registration_screen.dart';
+import '../Mrunali/app_theme.dart';
 import '../widgets/common_widgets.dart';
 
 class EventDetailScreen extends StatefulWidget {
