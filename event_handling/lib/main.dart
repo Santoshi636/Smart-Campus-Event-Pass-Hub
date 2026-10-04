@@ -11,6 +11,9 @@ import 'Madhuri/clubs_screen.dart';
 import 'Santoshi/registration_screen.dart';
 
 // Member 4 Import
+import 'Riya/my_pass.dart';
+import 'Riya/profile.dart';
+import 'Riya/about_help.dart';
 
 void main() {
   runApp(const SmartCampusApp());
@@ -50,6 +53,10 @@ class SmartCampusApp extends StatelessWidget {
           eventType: "Paid",
           eventFee: 300,
         ),
+
+        '/myPass': (context) => const MyPass(),
+        '/profile': (context) => const Profile(),
+        '/about': (context) => const AboutHelp(),
 
 
       },
