@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import '../models/event_model.dart';
 import '../Santoshi/registration_screen.dart';
-import '../widgets/common_widgets.dart';
+import 'common_widgets.dart';
 
-// Purple theme constants matching Mrunali folder
+
 const _kPrimary   = Color(0xFF4A00E0);
 const _kSecondary = Color(0xFF8E2DE2);
 const _kTextDark  = Color(0xFF1A1A2E);
