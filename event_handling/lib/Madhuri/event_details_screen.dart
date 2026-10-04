@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/event_model.dart';
 import '../Santoshi/registration_screen.dart';
-import 'common_widgets.dart';
-
 
 const _kPrimary   = Color(0xFF4A00E0);
 const _kSecondary = Color(0xFF8E2DE2);
@@ -89,7 +87,7 @@ class _MadhuriEventDetailScreenState
                         horizontal: 20, vertical: 12),
                     child: Row(
                       mainAxisAlignment:
-                          MainAxisAlignment.spaceBetween,
+                      MainAxisAlignment.spaceBetween,
                       children: [
                         _circleBtn(
                           icon: Icons.arrow_back_ios_new_rounded,
@@ -100,9 +98,9 @@ class _MadhuriEventDetailScreenState
                               ? Icons.favorite_rounded
                               : Icons.favorite_border_rounded,
                           iconColor:
-                              _isFavorite ? _kHeartRed : Colors.white,
+                          _isFavorite ? _kHeartRed : Colors.white,
                           onTap: () => setState(
-                              () => _isFavorite = !_isFavorite),
+                                  () => _isFavorite = !_isFavorite),
                         ),
                       ],
                     ),
@@ -153,13 +151,13 @@ class _MadhuriEventDetailScreenState
                           24, 12, 24, 100),
                       child: Column(
                         crossAxisAlignment:
-                            CrossAxisAlignment.start,
+                        CrossAxisAlignment.start,
                         children: [
 
                           // ── Title + Price Tag ─────────────
                           Row(
                             crossAxisAlignment:
-                                CrossAxisAlignment.start,
+                            CrossAxisAlignment.start,
                             children: [
                               Expanded(
                                 child: Text(
@@ -175,9 +173,9 @@ class _MadhuriEventDetailScreenState
                               const SizedBox(width: 12),
                               Container(
                                 padding:
-                                    const EdgeInsets.symmetric(
-                                        horizontal: 16,
-                                        vertical: 8),
+                                const EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                    vertical: 8),
                                 decoration: BoxDecoration(
                                   gradient: const LinearGradient(
                                     colors: [
@@ -186,7 +184,7 @@ class _MadhuriEventDetailScreenState
                                     ],
                                   ),
                                   borderRadius:
-                                      BorderRadius.circular(20),
+                                  BorderRadius.circular(20),
                                   boxShadow: [
                                     BoxShadow(
                                       color: _kPrimary
@@ -230,7 +228,7 @@ class _MadhuriEventDetailScreenState
                               const SizedBox(width: 8),
                               AttendeeAvatarStack(
                                 countText:
-                                    '+${event.attendeeCount}',
+                                '+${event.attendeeCount}',
                               ),
                             ],
                           ),
@@ -260,10 +258,10 @@ class _MadhuriEventDetailScreenState
                           ),
                           GestureDetector(
                             onTap: () => setState(
-                                () => _isExpanded = !_isExpanded),
+                                    () => _isExpanded = !_isExpanded),
                             child: Padding(
                               padding:
-                                  const EdgeInsets.only(top: 4),
+                              const EdgeInsets.only(top: 4),
                               child: Text(
                                 _isExpanded
                                     ? 'Show less'
@@ -309,7 +307,7 @@ class _MadhuriEventDetailScreenState
                                   ],
                                 ),
                                 borderRadius:
-                                    BorderRadius.circular(16),
+                                BorderRadius.circular(16),
                                 border: Border.all(
                                   color: _kPrimary
                                       .withValues(alpha: 0.2),
@@ -387,7 +385,7 @@ class _MadhuriEventDetailScreenState
                   ),
                 ).copyWith(
                   backgroundColor:
-                      WidgetStateProperty.all(Colors.transparent),
+                  WidgetStateProperty.all(Colors.transparent),
                 ),
                 child: Ink(
                   decoration: BoxDecoration(
@@ -458,7 +456,7 @@ class _MadhuriEventDetailScreenState
   }) {
     return Container(
       padding:
-          const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+      const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
       decoration: BoxDecoration(
         color: _kScaffold,
         borderRadius: BorderRadius.circular(18),
@@ -592,5 +590,55 @@ class _MadhuriEventDetailScreenState
       default:
         return Icons.celebration_rounded;
     }
+  }
+}
+
+/// Helper Widget: Avatar Stack for Attendees
+class AttendeeAvatarStack extends StatelessWidget {
+  final String countText;
+
+  const AttendeeAvatarStack({super.key, required this.countText});
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 24,
+      width: 60,
+      child: Stack(
+        children: [
+          Positioned(
+            left: 0,
+            child: CircleAvatar(
+              radius: 12,
+              backgroundColor: Colors.purple.shade100,
+              child: const Icon(Icons.person, size: 14, color: _kPrimary),
+            ),
+          ),
+          Positioned(
+            left: 14,
+            child: CircleAvatar(
+              radius: 12,
+              backgroundColor: Colors.purple.shade200,
+              child: const Icon(Icons.person, size: 14, color: _kPrimary),
+            ),
+          ),
+          Positioned(
+            left: 28,
+            child: CircleAvatar(
+              radius: 12,
+              backgroundColor: _kPrimary,
+              child: Text(
+                countText,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 9,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
