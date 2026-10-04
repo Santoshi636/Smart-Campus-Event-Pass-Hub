@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
-import 'Mrunali/splash_screen.dart';
-
 // Member 1 Import (Home / Event List)
+import 'Mrunali/splash_screen.dart';
 import 'Mrunali/home_screen.dart';
+
+// Member 2 Import (Events Catalogue, Event Detail, Clubs)
+import 'Madhuri/events_screen.dart';
+import 'Madhuri/clubs_screen.dart';
 
 // Member 3 Import (Registration & Pass Module)
 import 'Santoshi/registration_screen.dart';
 
-// Member 4 Import (Events Catalogue, Event Detail, Clubs)
-import 'Madhuri/events_screen.dart';
-import 'Madhuri/clubs_screen.dart';
+// Member 4 Import
 
 void main() {
   runApp(const SmartCampusApp());
@@ -39,6 +40,10 @@ class SmartCampusApp extends StatelessWidget {
         '/splash': (context) => const SplashScreen(),
         '/home': (context) => const HomeScreen(),
 
+        // Member 2 Routes (Events Catalogue + Clubs)
+        '/events': (context) => const MadhuriEventsScreen(),
+        '/clubs': (context) => const ClubsScreen(),
+
         // Member 3 Route (Registration Module)
         '/registration': (context) => const RegistrationScreen(
           eventName: "Tech Fest 2026",
@@ -46,9 +51,7 @@ class SmartCampusApp extends StatelessWidget {
           eventFee: 300,
         ),
 
-        // Member 4 Routes (Events Catalogue + Clubs)
-        '/events': (context) => const MadhuriEventsScreen(),
-        '/clubs': (context) => const ClubsScreen(),
+
       },
     );
   }
