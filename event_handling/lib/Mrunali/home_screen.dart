@@ -1,3 +1,4 @@
+
 import 'package:flutter/material.dart';
 import '../models/event_model.dart';
 import 'event_card.dart';
@@ -13,10 +14,14 @@ class _HomeScreenState extends State<HomeScreen> {
   String selectedCategory = "All";
   String searchQuery = "";
 
+  final TextEditingController searchController =
+  TextEditingController();
+
   final List<EventModel> allEvents = EventModel.sampleEvents;
 
+  // All is kept internally as the default filter,
+  // but it is not displayed as a category card.
   final List<String> categories = [
-    "All",
     "Music Festival",
     "Technology",
     "Festival Arts",
@@ -24,7 +29,6 @@ class _HomeScreenState extends State<HomeScreen> {
   ];
 
   final Map<String, IconData> categoryIcons = {
-    "All": Icons.apps_rounded,
     "Music Festival": Icons.music_note_rounded,
     "Technology": Icons.computer_rounded,
     "Festival Arts": Icons.palette_rounded,
@@ -32,40 +36,58 @@ class _HomeScreenState extends State<HomeScreen> {
   };
 
   final Map<String, Color> categoryColors = {
-    "All": const Color(0xFF4A00E0),
-    "Music Festival": const Color(0xFF8E2DE2),
-    "Technology": const Color(0xFF4A00E0),
-    "Festival Arts": const Color(0xFFFF8A65),
-    "Sports": const Color(0xFF35B779),
+    "Music Festival": Color(0xFF8E2DE2),
+    "Technology": Color(0xFF4A00E0),
+    "Festival Arts": Color(0xFFFF8A65),
+    "Sports": Color(0xFF35B779),
   };
+
+  @override
+  void dispose() {
+    searchController.dispose();
+    super.dispose();
+  }
 
   List<EventModel> get popularEvents {
     return allEvents.where((event) => event.isPopular).toList();
   }
 
-  List<EventModel> get ongoingEvents {
-    return allEvents
-        .where((event) => event.date.toLowerCase().contains("now"))
-        .toList();
+  // LIVE SEARCH
+
+  List<EventModel> get searchResults {
+    final query = searchQuery.trim().toLowerCase();
+
+    if (query.isEmpty) {
+      return [];
+    }
+
+    return allEvents.where((event) {
+      final title = event.title.toLowerCase();
+      final venue = event.venue.toLowerCase();
+      final location = event.location.toLowerCase();
+
+      return title.contains(query) ||
+          venue.contains(query) ||
+          location.contains(query);
+    }).toList();
   }
+
+  // CATEGORY FILTER
 
   List<EventModel> get filteredUpcomingEvents {
     return allEvents.where((event) {
       final matchesCategory = selectedCategory == "All" ||
-          event.category == selectedCategory;
+          event.category.toLowerCase() ==
+              selectedCategory.toLowerCase();
 
-      final query = searchQuery.toLowerCase().trim();
-
-      final matchesSearch = query.isEmpty ||
-          event.title.toLowerCase().contains(query) ||
-          event.category.toLowerCase().contains(query);
-
-      return matchesCategory && matchesSearch;
+      return matchesCategory;
     }).toList();
   }
 
   @override
   Widget build(BuildContext context) {
+    final bool isSearching = searchQuery.trim().isNotEmpty;
+
     return Scaffold(
       backgroundColor: const Color(0xFFF8F9FA),
 
@@ -74,6 +96,7 @@ class _HomeScreenState extends State<HomeScreen> {
         elevation: 0,
         automaticallyImplyLeading: false,
         titleSpacing: 20,
+
         title: Row(
           children: [
             Container(
@@ -89,7 +112,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 borderRadius: BorderRadius.circular(14),
                 boxShadow: [
                   BoxShadow(
-                    color: const Color(0xFF4A00E0).withOpacity(0.3),
+                    color: const Color(0xFF4A00E0)
+                        .withOpacity(0.3),
                     blurRadius: 8,
                     offset: const Offset(0, 3),
                   ),
@@ -158,42 +182,41 @@ class _HomeScreenState extends State<HomeScreen> {
         child: SingleChildScrollView(
           physics: const BouncingScrollPhysics(),
           padding: const EdgeInsets.only(bottom: 30),
+
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
 
-              // ------------------------------------------------------------
               // GREETING
-              // ------------------------------------------------------------
 
-              const Padding(
-                padding: EdgeInsets.fromLTRB(20, 10, 20, 4),
-                child: Text(
-                  "Hello, Student 👋",
-                  style: TextStyle(
-                    fontSize: 25,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF1F1F1F),
+              if (!isSearching) ...[
+                const Padding(
+                  padding: EdgeInsets.fromLTRB(20, 10, 20, 4),
+                  child: Text(
+                    "Hello, Student 👋",
+                    style: TextStyle(
+                      fontSize: 25,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF1F1F1F),
+                    ),
                   ),
                 ),
-              ),
 
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 20),
-                child: Text(
-                  "Discover what's happening on your campus",
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.grey,
+                const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 20),
+                  child: Text(
+                    "Discover what's happening on your campus",
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.grey,
+                    ),
                   ),
                 ),
-              ),
 
-              const SizedBox(height: 18),
+                const SizedBox(height: 18),
+              ],
 
-              // ------------------------------------------------------------
               // SEARCH BAR
-              // ------------------------------------------------------------
 
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -210,25 +233,33 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ],
                   ),
+
                   child: TextField(
+                    controller: searchController,
+                    textInputAction: TextInputAction.search,
+
                     onChanged: (value) {
                       setState(() {
                         searchQuery = value;
                       });
                     },
+
                     decoration: InputDecoration(
                       hintText: "Search events, venues...",
                       hintStyle: TextStyle(
                         color: Colors.grey.shade400,
                         fontSize: 14,
                       ),
+
                       prefixIcon: const Icon(
                         Icons.search_rounded,
                         color: Color(0xFF4A00E0),
                       ),
+
                       suffixIcon: searchQuery.isNotEmpty
                           ? IconButton(
                         onPressed: () {
+                          searchController.clear();
                           setState(() {
                             searchQuery = "";
                           });
@@ -245,7 +276,9 @@ class _HomeScreenState extends State<HomeScreen> {
                           color: Color(0xFF4A00E0),
                         ),
                       ),
+
                       border: InputBorder.none,
+
                       contentPadding:
                       const EdgeInsets.symmetric(vertical: 16),
                     ),
@@ -253,164 +286,171 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
 
-              const SizedBox(height: 25),
+              const SizedBox(height: 20),
 
-              // ------------------------------------------------------------
-              // FEATURED EVENTS
-              // ------------------------------------------------------------
+              // SEARCH RESULTS
 
-              _sectionTitle(
-                "Featured Events",
-                "View all",
-                    () {
-                  Navigator.pushNamed(context, '/events');
-                },
-              ),
-
-              const SizedBox(height: 13),
-
-              SizedBox(
-                height: 205,
-                child: popularEvents.isEmpty
-                    ? _emptyState("No featured events available")
-                    : PageView.builder(
-                  controller: PageController(
-                    viewportFraction: 0.88,
-                  ),
-                  itemCount: popularEvents.length,
-                  itemBuilder: (context, index) {
-                    return Padding(
-                      padding: const EdgeInsets.only(right: 12),
-                      child: _featuredCard(
-                        popularEvents[index],
-                      ),
-                    );
-                  },
-                ),
-              ),
-
-              const SizedBox(height: 28),
-
-              // ------------------------------------------------------------
-              // CATEGORIES
-              // ------------------------------------------------------------
-
-              _sectionTitle(
-                "Explore Categories",
-                "",
-                    () {},
-              ),
-
-              const SizedBox(height: 13),
-
-              SizedBox(
-                height: 105,
-                child: ListView.builder(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  scrollDirection: Axis.horizontal,
-                  itemCount: categories.length,
-                  itemBuilder: (context, index) {
-                    final category = categories[index];
-
-                    return _categoryCard(
-                      category,
-                      categoryIcons[category]!,
-                      categoryColors[category]!,
-                    );
-                  },
-                ),
-              ),
-
-              const SizedBox(height: 28),
-
-              // ------------------------------------------------------------
-              // LIVE NOW
-              // ------------------------------------------------------------
-
-              _sectionTitle(
-                "Happening Now",
-                "See all",
-                    () {
-                  Navigator.pushNamed(context, '/events');
-                },
-              ),
-
-              const SizedBox(height: 13),
-
-              if (ongoingEvents.isEmpty)
+              if (isSearching) ...[
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: _emptyState(
-                    "No live events right now",
-                    compact: true,
+                  child: Text(
+                    "${searchResults.length} events found",
+                    style: const TextStyle(
+                      fontSize: 17,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF1F1F1F),
+                    ),
                   ),
-                )
-              else
-                SizedBox(
-                  height: 190,
-                  child: ListView.builder(
+                ),
+
+                const SizedBox(height: 15),
+
+                if (searchResults.isEmpty)
+                  Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20),
-                    scrollDirection: Axis.horizontal,
-                    itemCount: ongoingEvents.length,
+                    child: _emptyState(
+                      "No matching events found",
+                      compact: true,
+                    ),
+                  )
+                else
+                  ListView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    itemCount: searchResults.length,
                     itemBuilder: (context, index) {
-                      return _liveEventCard(
-                        ongoingEvents[index],
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 14),
+                        child: EventCard(
+                          event: searchResults[index],
+                        ),
+                      );
+                    },
+                  ),
+              ]
+
+              // NORMAL HOME SCREEN
+
+              else ...[
+                // FEATURED EVENTS
+
+                _sectionTitle(
+                  "Featured Events",
+                  "View all",
+                      () {
+                    Navigator.pushNamed(context, '/events');
+                  },
+                ),
+
+                const SizedBox(height: 13),
+
+                SizedBox(
+                  height: 205,
+                  child: popularEvents.isEmpty
+                      ? _emptyState("No featured events available")
+                      : PageView.builder(
+                    controller: PageController(
+                      viewportFraction: 0.88,
+                    ),
+                    itemCount: popularEvents.length,
+                    itemBuilder: (context, index) {
+                      return Padding(
+                        padding:
+                        const EdgeInsets.only(right: 12),
+                        child: _featuredCard(
+                          popularEvents[index],
+                        ),
                       );
                     },
                   ),
                 ),
 
-              const SizedBox(height: 28),
+                const SizedBox(height: 28),
 
-              // ------------------------------------------------------------
-              // UPCOMING EVENTS
-              // ------------------------------------------------------------
+                // EXPLORE CATEGORIES
 
-              _sectionTitle(
-                "Upcoming Events",
-                "View all",
-                    () {
-                  Navigator.pushNamed(context, '/events');
-                },
-              ),
+                _sectionTitle(
+                  "Explore Categories",
+                  "",
+                      () {},
+                ),
 
-              const SizedBox(height: 13),
+                const SizedBox(height: 13),
 
-              if (filteredUpcomingEvents.isEmpty)
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: _emptyState(
-                    "No events found",
-                    compact: true,
+                SizedBox(
+                  height: 105,
+                  child: ListView.builder(
+                    padding:
+                    const EdgeInsets.symmetric(horizontal: 20),
+                    scrollDirection: Axis.horizontal,
+                    itemCount: categories.length,
+                    itemBuilder: (context, index) {
+                      final category = categories[index];
+
+                      return _categoryCard(
+                        category,
+                        categoryIcons[category]!,
+                        categoryColors[category]!,
+                      );
+                    },
                   ),
-                )
-              else
-                ListView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  itemCount: filteredUpcomingEvents.length > 5
-                      ? 5
-                      : filteredUpcomingEvents.length,
-                  itemBuilder: (context, index) {
-                    return Padding(
-                      padding: const EdgeInsets.only(bottom: 14),
-                      child: EventCard(
-                        event: filteredUpcomingEvents[index],
-                      ),
-                    );
+                ),
+
+                const SizedBox(height: 28),
+
+                // UPCOMING EVENTS
+
+                _sectionTitle(
+                  selectedCategory == "All"
+                      ? "Upcoming Events"
+                      : "$selectedCategory Events",
+                  "View all",
+                      () {
+                    Navigator.pushNamed(context, '/events');
                   },
                 ),
+
+                const SizedBox(height: 13),
+
+                if (filteredUpcomingEvents.isEmpty)
+                  Padding(
+                    padding:
+                    const EdgeInsets.symmetric(horizontal: 20),
+                    child: _emptyState(
+                      "No events found",
+                      compact: true,
+                    ),
+                  )
+                else
+                  ListView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    padding:
+                    const EdgeInsets.symmetric(horizontal: 20),
+
+                    // Show only 4 cards on HomeScreen.
+                    itemCount: filteredUpcomingEvents.length > 4
+                        ? 4
+                        : filteredUpcomingEvents.length,
+
+                    itemBuilder: (context, index) {
+                      return Padding(
+                        padding:
+                        const EdgeInsets.only(bottom: 14),
+                        child: EventCard(
+                          event: filteredUpcomingEvents[index],
+                        ),
+                      );
+                    },
+                  ),
+              ],
             ],
           ),
         ),
       ),
     );
   }
-
-  // ========================================================================
-  // SECTION TITLE
-  // ========================================================================
 
   Widget _sectionTitle(
       String title,
@@ -440,7 +480,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 style: TextStyle(
                   fontSize: 13,
                   fontWeight: FontWeight.w600,
-                  color: Color(0xFF4A00E0),
+                  color: Color(0xFF6C4AB6),
                 ),
               ),
             ),
@@ -449,50 +489,51 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  // ========================================================================
-  // FEATURED CARD
-  // ========================================================================
-
   Widget _featuredCard(EventModel event) {
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(24),
-        boxShadow: [
-          BoxShadow(
-            color: const Color(0xFF4A00E0).withOpacity(0.15),
-            blurRadius: 18,
-            offset: const Offset(0, 7),
-          ),
-        ],
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(24),
-        child: Stack(
-          children: [
+    return GestureDetector(
+      onTap: () {
+        Navigator.pushNamed(
+          context,
+          '/event-detail',
+          arguments: event,
+        );
+      },
 
-            // INTERNET IMAGE
-            Positioned.fill(
-              child: Image.network(
+      child: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 20),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(24),
+          boxShadow: [
+            BoxShadow(
+              color: const Color(0xFF6C4AB6).withOpacity(0.15),
+              blurRadius: 15,
+              offset: const Offset(0, 7),
+            ),
+          ],
+        ),
+
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(24),
+
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              Image.network(
                 event.imageUrl,
                 fit: BoxFit.cover,
                 errorBuilder: (context, error, stackTrace) {
                   return Container(
-                    color: const Color(0xFFEFE8FF),
-                    child: const Center(
-                      child: Icon(
-                        Icons.image_not_supported_rounded,
-                        size: 45,
-                        color: Color(0xFF4A00E0),
-                      ),
+                    color: Colors.grey.shade300,
+                    child: const Icon(
+                      Icons.image_not_supported,
+                      size: 40,
+                      color: Colors.grey,
                     ),
                   );
                 },
               ),
-            ),
 
-            // DARK GRADIENT
-            Positioned.fill(
-              child: DecoratedBox(
+              Container(
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     begin: Alignment.topCenter,
@@ -504,109 +545,100 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
               ),
-            ),
 
-            // POPULAR LABEL
-            Positioned(
-              top: 14,
-              left: 14,
-              child: Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 11,
-                  vertical: 6,
-                ),
-                decoration: BoxDecoration(
-                  color: const Color(0xFF8E2DE2),
-                  borderRadius: BorderRadius.circular(20),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.2),
-                      blurRadius: 6,
-                    ),
-                  ],
-                ),
-                child: const Row(
-                  children: [
-                    Icon(
-                      Icons.star_rounded,
-                      size: 14,
-                      color: Colors.amber,
-                    ),
-                    SizedBox(width: 4),
-                    Text(
-                      "Popular",
-                      style: TextStyle(
-                        fontSize: 11,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-
-            // EVENT DETAILS
-            Positioned(
-              left: 17,
-              right: 17,
-              bottom: 15,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    event.category,
-                    style: const TextStyle(
-                      color: Color(0xFFD6C7FF),
-                      fontSize: 11,
-                      fontWeight: FontWeight.w600,
-                    ),
+              Positioned(
+                top: 14,
+                left: 14,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 7,
                   ),
-
-                  const SizedBox(height: 4),
-
-                  Text(
-                    event.title,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF6C4AB6),
+                    borderRadius: BorderRadius.circular(20),
                   ),
-
-                  const SizedBox(height: 5),
-
-                  Row(
+                  child: const Row(
+                    mainAxisSize: MainAxisSize.min,
                     children: [
-                      const Icon(
-                        Icons.calendar_month_rounded,
+                      Icon(
+                        Icons.star,
+                        color: Colors.amber,
                         size: 14,
-                        color: Colors.white70,
                       ),
-                      const SizedBox(width: 5),
+                      SizedBox(width: 4),
                       Text(
-                        event.date,
-                        style: const TextStyle(
-                          color: Colors.white70,
+                        "Popular",
+                        style: TextStyle(
+                          color: Colors.white,
                           fontSize: 12,
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
                     ],
                   ),
-                ],
+                ),
               ),
-            ),
-          ],
+
+              Positioned(
+                bottom: 15,
+                left: 17,
+                right: 17,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      event.category,
+                      style: const TextStyle(
+                        color: Colors.white70,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+
+                    const SizedBox(height: 5),
+
+                    Text(
+                      event.title,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+
+                    const SizedBox(height: 8),
+
+                    Row(
+                      children: [
+                        const Icon(
+                          Icons.calendar_today,
+                          color: Colors.white,
+                          size: 14,
+                        ),
+                        const SizedBox(width: 6),
+                        Text(
+                          event.date,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 12,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 
-  // ========================================================================
   // CATEGORY CARD
-  // ========================================================================
 
   Widget _categoryCard(
       String category,
@@ -615,76 +647,63 @@ class _HomeScreenState extends State<HomeScreen> {
       ) {
     final bool isSelected = selectedCategory == category;
 
+    String displayName = category;
+
+    if (category == "Music Festival") {
+      displayName = "Music";
+    } else if (category == "Festival Arts") {
+      displayName = "Arts";
+    }
+
     return GestureDetector(
       onTap: () {
         setState(() {
-          selectedCategory = category;
+          // Tapping the selected category again
+          // resets the filter to all events.
+          selectedCategory =
+          isSelected ? "All" : category;
         });
       },
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        width: 92,
+
+      child: Container(
+        width: 95,
         margin: const EdgeInsets.only(right: 12),
+        padding: const EdgeInsets.symmetric(
+          horizontal: 10,
+          vertical: 12,
+        ),
+
         decoration: BoxDecoration(
-          gradient: isSelected
-              ? const LinearGradient(
-            colors: [Color(0xFF4A00E0), Color(0xFF8E2DE2)],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          )
-              : null,
-          color: isSelected ? null : Colors.white,
-          borderRadius: BorderRadius.circular(20),
+          color: isSelected
+              ? color.withOpacity(0.15)
+              : Colors.white,
+          borderRadius: BorderRadius.circular(18),
           border: Border.all(
             color: isSelected
-                ? Colors.transparent
-                : const Color(0xFFE8EDF5),
+                ? color
+                : Colors.grey.shade200,
+            width: isSelected ? 1.5 : 1,
           ),
-          boxShadow: [
-            BoxShadow(
-              color: isSelected
-                  ? const Color(0xFF4A00E0).withOpacity(0.3)
-                  : Colors.black.withOpacity(0.04),
-              blurRadius: 10,
-              offset: const Offset(0, 4),
-            ),
-          ],
         ),
+
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Container(
-              height: 43,
-              width: 43,
-              decoration: BoxDecoration(
-                color: isSelected
-                    ? Colors.white.withOpacity(0.20)
-                    : color.withOpacity(0.10),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(
-                icon,
-                color: isSelected ? Colors.white : color,
-                size: 22,
-              ),
+            Icon(
+              icon,
+              color: color,
+              size: 28,
             ),
 
             const SizedBox(height: 8),
 
             Text(
-              category == "Festival Arts"
-                  ? "Arts"
-                  : category == "Music Festival"
-                  ? "Music"
-                  : category,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
+              displayName,
+              textAlign: TextAlign.center,
               style: TextStyle(
-                fontSize: 11,
+                fontSize: 12,
                 fontWeight: FontWeight.w600,
-                color: isSelected
-                    ? Colors.white
-                    : const Color(0xFF4B5563),
+                color: isSelected ? color : Colors.black87,
               ),
             ),
           ],
@@ -692,191 +711,38 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
-
-  // ========================================================================
-  // LIVE EVENT CARD
-  // ========================================================================
-
-  Widget _liveEventCard(EventModel event) {
-    return Container(
-      width: 245,
-      margin: const EdgeInsets.only(right: 14),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 12,
-            offset: const Offset(0, 5),
-          ),
-        ],
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-
-            // INTERNET IMAGE
-            SizedBox(
-              height: 105,
-              width: double.infinity,
-              child: Stack(
-                children: [
-                  Positioned.fill(
-                    child: Image.network(
-                      event.imageUrl,
-                      fit: BoxFit.cover,
-                      errorBuilder:
-                          (context, error, stackTrace) {
-                        return Container(
-                          color: const Color(0xFFEFE8FF),
-                          child: const Center(
-                            child: Icon(
-                              Icons.image_not_supported_rounded,
-                              color: Color(0xFF4A00E0),
-                              size: 35,
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-
-                  Positioned(
-                    top: 10,
-                    left: 10,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 9,
-                        vertical: 5,
-                      ),
-                      decoration: BoxDecoration(
-                        color: Colors.red.shade600,
-                        borderRadius: BorderRadius.circular(15),
-                      ),
-                      child: const Row(
-                        children: [
-                          Icon(
-                            Icons.circle,
-                            size: 7,
-                            color: Colors.white,
-                          ),
-                          SizedBox(width: 5),
-                          Text(
-                            "LIVE NOW",
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 9,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-            Padding(
-              padding: const EdgeInsets.fromLTRB(
-                13,
-                10,
-                13,
-                10,
-              ),
-              child: Column(
-                crossAxisAlignment:
-                CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    event.category,
-                    style: const TextStyle(
-                      fontSize: 10,
-                      color: Color(0xFF4A00E0),
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-
-                  const SizedBox(height: 3),
-
-                  Text(
-                    event.title,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF1F1F1F),
-                    ),
-                  ),
-
-                  const SizedBox(height: 4),
-
-                  Row(
-                    children: [
-                      const Icon(
-                        Icons.location_on_outlined,
-                        size: 13,
-                        color: Colors.grey,
-                      ),
-                      const SizedBox(width: 3),
-                      Expanded(
-                        child: Text(
-                          event.venue.isNotEmpty ? event.venue : "Campus Venue",
-                          style: const TextStyle(
-                            fontSize: 10,
-                            color: Colors.grey,
-                          ),
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  // ========================================================================
-  // EMPTY STATE
-  // ========================================================================
 
   Widget _emptyState(
       String message, {
         bool compact = false,
       }) {
-    return Container(
-      width: double.infinity,
+    return Padding(
       padding: EdgeInsets.symmetric(
-        vertical: compact ? 22 : 40,
+        horizontal: 20,
+        vertical: compact ? 25 : 45,
       ),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(18),
-      ),
-      child: Column(
-        children: [
-          Icon(
-            Icons.event_busy_rounded,
-            size: compact ? 30 : 45,
-            color: Colors.grey.shade400,
-          ),
-          const SizedBox(height: 8),
-          Text(
-            message,
-            style: const TextStyle(
-              color: Colors.grey,
-              fontSize: 13,
+
+      child: Center(
+        child: Column(
+          children: [
+            Icon(
+              Icons.event_busy,
+              size: compact ? 38 : 48,
+              color: Colors.grey.shade400,
             ),
-          ),
-        ],
+
+            const SizedBox(height: 10),
+
+            Text(
+              message,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: Colors.grey.shade600,
+                fontSize: 14,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

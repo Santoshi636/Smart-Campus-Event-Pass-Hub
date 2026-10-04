@@ -1,19 +1,25 @@
+
 import 'package:flutter/material.dart';
-// Member 1 Import (Home / Event List)
+
+// Member 1
 import 'Mrunali/splash_screen.dart';
 import 'Mrunali/home_screen.dart';
 
-// Member 2 Import (Events Catalogue, Event Detail, Clubs)
+// Member 2
 import 'Madhuri/events_screen.dart';
 import 'Madhuri/clubs_screen.dart';
+import 'Madhuri/event_details_screen.dart';
 
-// Member 3 Import (Registration & Pass Module)
+// Member 3
 import 'Santoshi/registration_screen.dart';
 
-// Member 4 Import
-import 'Riya/my_pass.dart';
-import 'Riya/profile.dart';
-import 'Riya/about_help.dart';
+//Member 4
+import 'Riya/my_pass_screen.dart';
+import 'Riya/profile_screen.dart';
+import 'Riya/about_screen.dart';
+
+// Event Model
+import 'models/event_model.dart';
 
 void main() {
   runApp(const SmartCampusApp());
@@ -34,31 +40,32 @@ class SmartCampusApp extends StatelessWidget {
         useMaterial3: true,
       ),
 
-      // Set the initial route matching your routes table string
       initialRoute: '/splash',
 
-      // Centralized Named Routes Table
       routes: {
-        // Member 1 Route (SplashScreen added)
         '/splash': (context) => const SplashScreen(),
+
         '/home': (context) => const HomeScreen(),
 
-        // Member 2 Routes (Events Catalogue + Clubs)
         '/events': (context) => const MadhuriEventsScreen(),
+
         '/clubs': (context) => const ClubsScreen(),
 
-        // Member 3 Route (Registration Module)
+        // FIXED: Event Detail Navigation
+        '/event-detail': (context) {
+          final event =
+          ModalRoute.of(context)!.settings.arguments as EventModel;
+
+          return MadhuriEventDetailScreen(
+            event: event,
+          );
+        },
+
         '/registration': (context) => const RegistrationScreen(
           eventName: "Tech Fest 2026",
           eventType: "Paid",
           eventFee: 300,
         ),
-
-        '/myPass': (context) => const MyPass(),
-        '/profile': (context) => const Profile(),
-        '/about': (context) => const AboutHelp(),
-
-
       },
     );
   }
