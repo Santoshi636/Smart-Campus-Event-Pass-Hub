@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/event_model.dart';
-import '../screens/event_detail_screen.dart';
+import '../Madhuri/event_details_screen.dart';
 import '../Santoshi/registration_screen.dart';
 
 class EventCard extends StatelessWidget {
@@ -22,7 +22,7 @@ class EventCard extends StatelessWidget {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => EventDetailScreenState(event: event),
+                builder: (context) => MadhuriEventDetailScreen(event: event),
               ),
             );
           },
