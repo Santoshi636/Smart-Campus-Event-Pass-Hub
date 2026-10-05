@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import 'digital_pass_screen.dart';
 
 // Member 4 - My Pass
@@ -30,75 +31,212 @@ class PaymentScreen extends StatelessWidget {
     required this.collegeYear,
   });
 
+  // ============================================================
+  // CREATE AND SAVE PASS
+  // ============================================================
+
+  void _savePass() {
+
+    final registeredEvent =
+    RegisteredEvent(
+
+      // Event details
+      eventName: eventName,
+
+      eventType: eventType,
+
+      eventDate:
+      '25 January 2027',
+
+      eventTime:
+      '5:00 PM onwards',
+
+      venue:
+      'College Auditorium',
+
+      passId:
+      'SCH-${DateTime.now().millisecondsSinceEpoch}',
+
+      fee: eventFee,
+
+      // Student details
+      name: name,
+
+      email: email,
+
+      studentId: studentId,
+
+      department: department,
+
+      collegeName: collegeName,
+
+      collegeYear: collegeYear,
+    );
+
+    PassManager.addPass(
+      registeredEvent,
+    );
+  }
+
+  // ============================================================
+  // OPEN DIGITAL PASS
+  // ============================================================
+
+  void _openDigitalPass(
+      BuildContext context) {
+
+    Navigator.pushReplacement(
+      context,
+
+      MaterialPageRoute(
+        builder: (_) =>
+            DigitalPassScreen(
+              eventName: eventName,
+
+              eventType: eventType,
+
+              eventFee: eventFee,
+
+              paymentStatus: "Paid",
+
+              name: name,
+
+              email: email,
+
+              studentId: studentId,
+
+              department: department,
+
+              collegeName: collegeName,
+
+              collegeYear: collegeYear,
+            ),
+      ),
+    );
+  }
+
+  // ============================================================
+  // BUILD
+  // ============================================================
+
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
-      backgroundColor: Colors.grey.shade100,
+      backgroundColor:
+      Colors.grey.shade100,
+
       appBar: AppBar(
-        title: const Text("Payment"),
+        title:
+        const Text("Payment"),
+
         centerTitle: true,
-        foregroundColor: Colors.white,
-        flexibleSpace: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              colors: [Color(0xff4A00E0), Color(0xff8E2DE2)],
+
+        foregroundColor:
+        Colors.white,
+
+        flexibleSpace:
+        Container(
+          decoration:
+          const BoxDecoration(
+            gradient:
+            LinearGradient(
+              colors: [
+                Color(0xff4A00E0),
+                Color(0xff8E2DE2),
+              ],
             ),
           ),
         ),
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20),
+
+      body:
+      SingleChildScrollView(
+        padding:
+        const EdgeInsets.all(20),
+
         child: Column(
           children: [
-            const SizedBox(height: 10),
+
+            const SizedBox(
+              height: 10,
+            ),
+
+            // ==================================================
+            // PAYMENT SUMMARY
+            // ==================================================
 
             Container(
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20),
+              padding:
+              const EdgeInsets.all(20),
+
+              decoration:
+              BoxDecoration(
+                borderRadius:
+                BorderRadius.circular(20),
+
                 color: Colors.white,
+
                 boxShadow: const [
                   BoxShadow(
                     blurRadius: 10,
                     color: Colors.black12,
-                  )
+                  ),
                 ],
               ),
+
               child: Column(
                 children: [
+
                   const Icon(
                     Icons.account_balance_wallet,
                     size: 80,
                     color: Colors.deepPurple,
                   ),
 
-                  const SizedBox(height: 15),
+                  const SizedBox(
+                    height: 15,
+                  ),
 
                   Text(
                     eventName,
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(
+
+                    textAlign:
+                    TextAlign.center,
+
+                    style:
+                    const TextStyle(
                       fontSize: 24,
-                      fontWeight: FontWeight.bold,
+                      fontWeight:
+                      FontWeight.bold,
                     ),
                   ),
 
-                  const SizedBox(height: 15),
+                  const SizedBox(
+                    height: 15,
+                  ),
 
                   Text(
                     "Amount Payable",
+
                     style: TextStyle(
-                      color: Colors.grey.shade600,
+                      color:
+                      Colors.grey.shade600,
                     ),
                   ),
 
-                  const SizedBox(height: 5),
+                  const SizedBox(
+                    height: 5,
+                  ),
 
                   Text(
                     "₹${eventFee.toStringAsFixed(0)}",
-                    style: const TextStyle(
+
+                    style:
+                    const TextStyle(
                       fontSize: 40,
-                      fontWeight: FontWeight.bold,
+                      fontWeight:
+                      FontWeight.bold,
                       color: Colors.green,
                     ),
                   ),
@@ -106,182 +244,246 @@ class PaymentScreen extends StatelessWidget {
               ),
             ),
 
-            const SizedBox(height: 25),
+            const SizedBox(
+              height: 25,
+            ),
+
+            // ==================================================
+            // STUDENT INFORMATION
+            // ==================================================
 
             Card(
               child: ListTile(
-                leading: const Icon(
+                leading:
+                const Icon(
                   Icons.person,
-                  color: Colors.deepPurple,
+                  color:
+                  Colors.deepPurple,
                 ),
-                title: Text(name),
-                subtitle: const Text("Participant Name"),
+
+                title:
+                Text(name),
+
+                subtitle:
+                const Text(
+                  "Participant Name",
+                ),
               ),
             ),
 
             Card(
               child: ListTile(
-                leading: const Icon(
+                leading:
+                const Icon(
                   Icons.email,
-                  color: Colors.deepPurple,
+                  color:
+                  Colors.deepPurple,
                 ),
-                title: Text(email),
-                subtitle: const Text("Email Address"),
+
+                title:
+                Text(email),
+
+                subtitle:
+                const Text(
+                  "Email Address",
+                ),
               ),
             ),
 
             Card(
               child: ListTile(
-                leading: const Icon(
+                leading:
+                const Icon(
                   Icons.badge,
-                  color: Colors.deepPurple,
+                  color:
+                  Colors.deepPurple,
                 ),
-                title: Text(studentId),
-                subtitle: const Text("Student ID / PRN"),
+
+                title:
+                Text(studentId),
+
+                subtitle:
+                const Text(
+                  "Student ID / PRN",
+                ),
               ),
             ),
 
             Card(
               child: ListTile(
-                leading: const Icon(
+                leading:
+                const Icon(
                   Icons.account_balance,
-                  color: Colors.deepPurple,
+                  color:
+                  Colors.deepPurple,
                 ),
-                title: Text(collegeName),
-                subtitle: const Text("College Name"),
+
+                title:
+                Text(collegeName),
+
+                subtitle:
+                const Text(
+                  "College Name",
+                ),
               ),
             ),
 
             Card(
               child: ListTile(
-                leading: const Icon(
+                leading:
+                const Icon(
                   Icons.school,
-                  color: Colors.deepPurple,
+                  color:
+                  Colors.deepPurple,
                 ),
-                title: Text("$department ($collegeYear)"),
-                subtitle: const Text(
+
+                title:
+                Text(
+                  "$department ($collegeYear)",
+                ),
+
+                subtitle:
+                const Text(
                   "Department & Academic Year",
                 ),
               ),
             ),
 
-            const SizedBox(height: 30),
+            const SizedBox(
+              height: 30,
+            ),
+
+            // ==================================================
+            // PAY NOW
+            // ==================================================
 
             SizedBox(
-              width: double.infinity,
+              width:
+              double.infinity,
+
               height: 55,
 
-              child: ElevatedButton.icon(
-                icon: const Icon(Icons.payment),
+              child:
+              ElevatedButton.icon(
 
-                label: const Text(
+                icon:
+                const Icon(
+                  Icons.payment,
+                ),
+
+                label:
+                const Text(
                   "PAY NOW",
-                  style: TextStyle(
+
+                  style:
+                  TextStyle(
                     fontSize: 18,
-                    fontWeight: FontWeight.bold,
+                    fontWeight:
+                    FontWeight.bold,
                   ),
                 ),
 
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.green,
-                  foregroundColor: Colors.white,
+                style:
+                ElevatedButton.styleFrom(
+                  backgroundColor:
+                  Colors.green,
 
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(15),
+                  foregroundColor:
+                  Colors.white,
+
+                  shape:
+                  RoundedRectangleBorder(
+                    borderRadius:
+                    BorderRadius.circular(
+                      15,
+                    ),
                   ),
                 ),
 
                 onPressed: () {
+
+                  // ==========================================
+                  // PAYMENT SUCCESS
+                  // ==========================================
+
                   showDialog(
                     context: context,
-                    barrierDismissible: false,
 
-                    builder: (_) => AlertDialog(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20),
-                      ),
+                    barrierDismissible:
+                    false,
 
-                      content: Column(
-                        mainAxisSize: MainAxisSize.min,
+                    builder: (_) =>
+                        AlertDialog(
 
-                        children: [
-                          const Icon(
-                            Icons.check_circle,
-                            color: Colors.green,
-                            size: 80,
-                          ),
-
-                          const SizedBox(height: 15),
-
-                          const Text(
-                            "Payment Successful!",
-                            style: TextStyle(
-                              fontSize: 22,
-                              fontWeight: FontWeight.bold,
+                          shape:
+                          RoundedRectangleBorder(
+                            borderRadius:
+                            BorderRadius.circular(
+                              20,
                             ),
                           ),
 
-                          const SizedBox(height: 20),
+                          content:
+                          Column(
+                            mainAxisSize:
+                            MainAxisSize.min,
 
-                          ElevatedButton(
-                            onPressed: () {
-                              // =========================================
-                              // ADD PAID EVENT TO MY PASS
-                              // =========================================
+                            children: [
 
-                              PassManager.addPass(
-                                RegisteredEvent(
-                                  eventName: eventName,
-                                  eventType: eventType,
+                              const Icon(
+                                Icons.check_circle,
+                                color:
+                                Colors.green,
+                                size: 80,
+                              ),
 
-                                  eventDate:
-                                  '25 January 2027',
+                              const SizedBox(
+                                height: 15,
+                              ),
 
-                                  eventTime:
-                                  '5:00 PM onwards',
+                              const Text(
+                                "Payment Successful!",
 
-                                  venue:
-                                  'College Auditorium',
+                                textAlign:
+                                TextAlign.center,
 
-                                  passId:
-                                  'SCH-${DateTime.now().millisecondsSinceEpoch}',
-
-                                  fee: eventFee,
+                                style:
+                                TextStyle(
+                                  fontSize: 22,
+                                  fontWeight:
+                                  FontWeight.bold,
                                 ),
-                              );
+                              ),
 
-                              // Close success dialog
-                              Navigator.pop(context);
+                              const SizedBox(
+                                height: 20,
+                              ),
 
-                              // Open Digital Pass
-                              Navigator.pushReplacement(
-                                context,
+                              ElevatedButton(
+                                onPressed: () {
 
-                                MaterialPageRoute(
-                                  builder: (_) =>
-                                      DigitalPassScreen(
-                                        eventName: eventName,
-                                        eventType: eventType,
-                                        eventFee: eventFee,
-                                        paymentStatus: "Paid",
-                                        name: name,
-                                        email: email,
-                                        studentId: studentId,
-                                        department: department,
-                                        collegeName: collegeName,
-                                        collegeYear: collegeYear,
-                                      ),
+                                  // Save complete pass
+                                  _savePass();
+
+                                  // Close dialog
+                                  Navigator.pop(
+                                    context,
+                                  );
+
+                                  // Open digital pass
+                                  _openDigitalPass(
+                                    context,
+                                  );
+                                },
+
+                                child:
+                                const Text(
+                                  "View Pass",
                                 ),
-                              );
-                            },
-
-                            child: const Text(
-                              "View Pass",
-                            ),
+                              ),
+                            ],
                           ),
-                        ],
-                      ),
-                    ),
+                        ),
                   );
                 },
               ),

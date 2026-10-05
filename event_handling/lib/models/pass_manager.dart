@@ -1,12 +1,18 @@
 import 'registered_event.dart';
 
 class PassManager {
-  // Stores all successfully registered/purchased passes
+  // ============================================================
+  // STORES ALL SUCCESSFULLY REGISTERED / PURCHASED PASSES
+  // ============================================================
+
   static final List<RegisteredEvent> myPasses = [];
 
-  // Add a new pass
+  // ============================================================
+  // ADD PASS
+  // ============================================================
+
   static void addPass(RegisteredEvent pass) {
-    // Prevent duplicate passes for the same event
+    // Prevent duplicate registration for same event
     final alreadyExists = myPasses.any(
           (existingPass) =>
       existingPass.eventName == pass.eventName,
@@ -17,26 +23,38 @@ class PassManager {
     }
   }
 
-  // Check whether user already has a pass
+  // ============================================================
+  // CHECK WHETHER USER ALREADY HAS A PASS
+  // ============================================================
+
   static bool hasPass(String eventName) {
     return myPasses.any(
           (pass) => pass.eventName == eventName,
     );
   }
 
-  // Remove a pass if needed
+  // ============================================================
+  // REMOVE PASS
+  // ============================================================
+
   static void removePass(String passId) {
     myPasses.removeWhere(
           (pass) => pass.passId == passId,
     );
   }
 
-  // Clear all passes
+  // ============================================================
+  // CLEAR ALL PASSES
+  // ============================================================
+
   static void clearPasses() {
     myPasses.clear();
   }
 
-  // Get number of passes
+  // ============================================================
+  // NUMBER OF PASSES
+  // ============================================================
+
   static int get passCount {
     return myPasses.length;
   }

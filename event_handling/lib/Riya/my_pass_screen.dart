@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../models/pass_manager.dart';
 import '../models/registered_event.dart';
+import '/Santoshi/digital_pass_screen.dart';
 
 class MyPassScreen extends StatefulWidget {
   const MyPassScreen({super.key});
@@ -24,17 +25,64 @@ class _MyPassScreenState
     _refresh();
   }
 
+  // ============================================================
+  // REFRESH SCREEN
+  // ============================================================
+
   void _refresh() {
-    WidgetsBinding.instance
-        .addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
         setState(() {});
       }
     });
   }
 
+  // ============================================================
+  // OPEN DIGITAL PASS
+  // ============================================================
+
+  void _openDigitalPass(
+      RegisteredEvent pass) {
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => DigitalPassScreen(
+          eventName: pass.eventName,
+
+          eventType: pass.eventType,
+
+          eventFee: pass.fee,
+
+          paymentStatus:
+          pass.fee == 0
+              ? "Not Required"
+              : "Paid",
+
+          // Student details
+          name: pass.name,
+
+          email: pass.email,
+
+          studentId: pass.studentId,
+
+          department: pass.department,
+
+          collegeName: pass.collegeName,
+
+          collegeYear: pass.collegeYear,
+        ),
+      ),
+    );
+  }
+
+  // ============================================================
+  // BUILD
+  // ============================================================
+
   @override
   Widget build(BuildContext context) {
+
     final List<RegisteredEvent> passes =
     List<RegisteredEvent>.from(
       PassManager.myPasses,
@@ -47,6 +95,7 @@ class _MyPassScreenState
       appBar: AppBar(
         backgroundColor:
         const Color(0xFFF8F8FA),
+
         elevation: 0,
 
         title: const Text(
@@ -71,10 +120,14 @@ class _MyPassScreenState
         },
 
         child: ListView(
+          physics:
+          const AlwaysScrollableScrollPhysics(),
+
           padding:
           const EdgeInsets.all(16),
 
           children: [
+
             const Text(
               'My Registered Events',
               style: TextStyle(
@@ -94,9 +147,7 @@ class _MyPassScreenState
               ),
             ),
 
-            const SizedBox(
-              height: 20,
-            ),
+            const SizedBox(height: 20),
 
             ...passes.map(
                   (pass) =>
@@ -108,7 +159,12 @@ class _MyPassScreenState
     );
   }
 
+  // ============================================================
+  // EMPTY PASS SCREEN
+  // ============================================================
+
   Widget _emptyPassScreen() {
+
     return Center(
       child: Padding(
         padding:
@@ -119,6 +175,7 @@ class _MyPassScreenState
           MainAxisAlignment.center,
 
           children: [
+
             Container(
               height: 100,
               width: 100,
@@ -131,8 +188,7 @@ class _MyPassScreenState
               ),
 
               child: const Icon(
-                Icons
-                    .confirmation_number_outlined,
+                Icons.confirmation_number_outlined,
                 size: 50,
                 color: primaryPurple,
               ),
@@ -192,6 +248,7 @@ class _MyPassScreenState
                 ElevatedButton.styleFrom(
                   backgroundColor:
                   primaryPurple,
+
                   foregroundColor:
                   Colors.white,
 
@@ -213,12 +270,20 @@ class _MyPassScreenState
     );
   }
 
+  // ============================================================
+  // PASS CARD
+  // ============================================================
+
   Widget _passCard(
       RegisteredEvent pass) {
 
     return GestureDetector(
+
+      // IMPORTANT:
+      // Clicking the pass now opens the complete
+      // DigitalPassScreen with student details + QR.
       onTap: () {
-        _showPassDetails(pass);
+        _openDigitalPass(pass);
       },
 
       child: Container(
@@ -227,8 +292,10 @@ class _MyPassScreenState
           bottom: 18,
         ),
 
-        decoration: BoxDecoration(
+        decoration:
+        BoxDecoration(
           color: Colors.white,
+
           borderRadius:
           BorderRadius.circular(22),
 
@@ -243,6 +310,11 @@ class _MyPassScreenState
 
         child: Column(
           children: [
+
+            // ==================================================
+            // PASS HEADER
+            // ==================================================
+
             Container(
               width: double.infinity,
 
@@ -270,6 +342,7 @@ class _MyPassScreenState
 
               child: Row(
                 children: [
+
                   Container(
                     height: 45,
                     width: 45,
@@ -277,6 +350,7 @@ class _MyPassScreenState
                     decoration:
                     BoxDecoration(
                       color: Colors.white,
+
                       borderRadius:
                       BorderRadius.circular(
                         13,
@@ -285,6 +359,7 @@ class _MyPassScreenState
 
                     child: const Icon(
                       Icons.event,
+
                       color:
                       primaryPurple,
                     ),
@@ -297,6 +372,12 @@ class _MyPassScreenState
                   Expanded(
                     child: Text(
                       pass.eventName,
+
+                      maxLines: 2,
+
+                      overflow:
+                      TextOverflow.ellipsis,
+
                       style:
                       const TextStyle(
                         color: Colors.white,
@@ -307,10 +388,11 @@ class _MyPassScreenState
                     ),
                   ),
 
+                  const SizedBox(width: 8),
+
                   Container(
                     padding:
-                    const EdgeInsets
-                        .symmetric(
+                    const EdgeInsets.symmetric(
                       horizontal: 9,
                       vertical: 5,
                     ),
@@ -318,9 +400,8 @@ class _MyPassScreenState
                     decoration:
                     BoxDecoration(
                       color: Colors.white
-                          .withOpacity(
-                        0.2,
-                      ),
+                          .withOpacity(0.2),
+
                       borderRadius:
                       BorderRadius.circular(
                         20,
@@ -345,29 +426,31 @@ class _MyPassScreenState
               ),
             ),
 
+            // ==================================================
+            // PASS DETAILS
+            // ==================================================
+
             Padding(
               padding:
               const EdgeInsets.all(18),
 
               child: Column(
                 children: [
+
                   _detailRow(
-                    Icons
-                        .calendar_today_outlined,
+                    Icons.calendar_today_outlined,
                     'Date',
                     pass.eventDate,
                   ),
 
                   _detailRow(
-                    Icons
-                        .access_time_outlined,
+                    Icons.access_time_outlined,
                     'Time',
                     pass.eventTime,
                   ),
 
                   _detailRow(
-                    Icons
-                        .location_on_outlined,
+                    Icons.location_on_outlined,
                     'Venue',
                     pass.venue,
                   ),
@@ -388,8 +471,13 @@ class _MyPassScreenState
                     height: 10,
                   ),
 
+                  // ==================================================
+                  // BOTTOM ACTION
+                  // ==================================================
+
                   Row(
                     children: [
+
                       const Icon(
                         Icons.check_circle,
                         color: Colors.green,
@@ -400,21 +488,32 @@ class _MyPassScreenState
                         width: 8,
                       ),
 
-                      Text(
-                        pass.fee == 0
-                            ? 'Free registration confirmed'
-                            : 'Payment successful',
+                      Expanded(
+                        child: Text(
+                          pass.fee == 0
+                              ? 'Free registration confirmed'
+                              : 'Payment successful',
 
-                        style:
-                        const TextStyle(
-                          color: Colors.green,
-                          fontWeight:
-                          FontWeight.w600,
-                          fontSize: 12,
+                          style:
+                          const TextStyle(
+                            color: Colors.green,
+                            fontWeight:
+                            FontWeight.w600,
+                            fontSize: 12,
+                          ),
                         ),
                       ),
 
-                      const Spacer(),
+                      const Icon(
+                        Icons.qr_code_2,
+                        color:
+                        primaryPurple,
+                        size: 22,
+                      ),
+
+                      const SizedBox(
+                        width: 5,
+                      ),
 
                       const Icon(
                         Icons.chevron_right,
@@ -431,11 +530,16 @@ class _MyPassScreenState
     );
   }
 
+  // ============================================================
+  // DETAIL ROW
+  // ============================================================
+
   Widget _detailRow(
       IconData icon,
       String title,
       String value,
       ) {
+
     return Padding(
       padding:
       const EdgeInsets.only(
@@ -444,6 +548,7 @@ class _MyPassScreenState
 
       child: Row(
         children: [
+
           Icon(
             icon,
             size: 19,
@@ -454,7 +559,9 @@ class _MyPassScreenState
 
           Text(
             '$title: ',
-            style: const TextStyle(
+
+            style:
+            const TextStyle(
               color: Colors.grey,
               fontSize: 12,
             ),
@@ -463,7 +570,14 @@ class _MyPassScreenState
           Expanded(
             child: Text(
               value,
-              style: const TextStyle(
+
+              maxLines: 2,
+
+              overflow:
+              TextOverflow.ellipsis,
+
+              style:
+              const TextStyle(
                 fontSize: 12,
                 fontWeight:
                 FontWeight.w600,
@@ -472,153 +586,6 @@ class _MyPassScreenState
           ),
         ],
       ),
-    );
-  }
-
-  void _showPassDetails(
-      RegisteredEvent pass) {
-
-    showModalBottomSheet(
-      context: context,
-
-      backgroundColor:
-      Colors.transparent,
-
-      builder: (context) {
-        return Container(
-          padding:
-          const EdgeInsets.all(22),
-
-          decoration:
-          const BoxDecoration(
-            color: Colors.white,
-
-            borderRadius:
-            BorderRadius.only(
-              topLeft:
-              Radius.circular(25),
-              topRight:
-              Radius.circular(25),
-            ),
-          ),
-
-          child: Column(
-            mainAxisSize:
-            MainAxisSize.min,
-
-            children: [
-              Container(
-                height: 5,
-                width: 45,
-
-                decoration:
-                BoxDecoration(
-                  color:
-                  Colors.grey.shade300,
-                  borderRadius:
-                  BorderRadius.circular(
-                    10,
-                  ),
-                ),
-              ),
-
-              const SizedBox(
-                height: 20,
-              ),
-
-              const Icon(
-                Icons.confirmation_number,
-                color: primaryPurple,
-                size: 45,
-              ),
-
-              const SizedBox(
-                height: 12,
-              ),
-
-              Text(
-                pass.eventName,
-                textAlign:
-                TextAlign.center,
-
-                style:
-                const TextStyle(
-                  fontSize: 20,
-                  fontWeight:
-                  FontWeight.bold,
-                ),
-              ),
-
-              const SizedBox(
-                height: 8,
-              ),
-
-              Text(
-                pass.fee == 0
-                    ? 'FREE EVENT'
-                    : 'PAID EVENT • ₹${pass.fee.toStringAsFixed(0)}',
-
-                style:
-                const TextStyle(
-                  color: primaryPurple,
-                  fontWeight:
-                  FontWeight.bold,
-                  fontSize: 12,
-                ),
-              ),
-
-              const SizedBox(
-                height: 20,
-              ),
-
-              Text(
-                'Pass ID: ${pass.passId}',
-                style:
-                const TextStyle(
-                  color: Colors.grey,
-                ),
-              ),
-
-              const SizedBox(
-                height: 20,
-              ),
-
-              SizedBox(
-                width: double.infinity,
-                height: 48,
-
-                child:
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.pop(
-                      context,
-                    );
-                  },
-
-                  style:
-                  ElevatedButton.styleFrom(
-                    backgroundColor:
-                    primaryPurple,
-                    foregroundColor:
-                    Colors.white,
-
-                    shape:
-                    RoundedRectangleBorder(
-                      borderRadius:
-                      BorderRadius.circular(
-                        14,
-                      ),
-                    ),
-                  ),
-
-                  child:
-                  const Text('Close'),
-                ),
-              ),
-            ],
-          ),
-        );
-      },
     );
   }
 }

@@ -13,9 +13,6 @@ import 'Madhuri/event_details_screen.dart';
 import 'Santoshi/registration_screen.dart';
 
 // Member 4
-import 'Riya/my_pass_screen.dart';
-import 'Riya/profile_screen.dart';
-import 'Riya/about_screen.dart';
 import 'Riya/main_navigation.dart';
 
 // Event Model

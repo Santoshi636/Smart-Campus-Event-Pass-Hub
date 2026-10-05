@@ -27,12 +27,20 @@ class RegistrationScreen extends StatefulWidget {
 class _RegistrationScreenState
     extends State<RegistrationScreen> {
 
-  final _formKey = GlobalKey<FormState>();
+  final _formKey =
+  GlobalKey<FormState>();
 
-  final nameController = TextEditingController();
-  final emailController = TextEditingController();
-  final studentIdController = TextEditingController();
-  final collegeController = TextEditingController();
+  final nameController =
+  TextEditingController();
+
+  final emailController =
+  TextEditingController();
+
+  final studentIdController =
+  TextEditingController();
+
+  final collegeController =
+  TextEditingController();
 
   String? _selectedDepartment;
   String? _selectedCollegeYear;
@@ -52,16 +60,30 @@ class _RegistrationScreenState
     '4th Year / Postgrad',
   ];
 
+  // ============================================================
+  // DISPOSE
+  // ============================================================
+
   @override
   void dispose() {
+
     nameController.dispose();
+
     emailController.dispose();
+
     studentIdController.dispose();
+
     collegeController.dispose();
+
     super.dispose();
   }
 
+  // ============================================================
+  // SUBMIT FORM
+  // ============================================================
+
   void submitForm() {
+
     if (!_formKey.currentState!.validate()) {
       return;
     }
@@ -72,124 +94,255 @@ class _RegistrationScreenState
     final yearValue =
         _selectedCollegeYear ?? '';
 
-    // ==========================================
-    // CHECK DUPLICATE REGISTRATION
-    // ==========================================
+    // ==========================================================
+    // CHECK DUPLICATE
+    // ==========================================================
 
-    if (PassManager.hasPass(widget.eventName)) {
-      ScaffoldMessenger.of(context).showSnackBar(
+    if (PassManager.hasPass(
+        widget.eventName)) {
+
+      ScaffoldMessenger.of(context)
+          .showSnackBar(
         const SnackBar(
           content: Text(
             'You have already registered for this event.',
           ),
-          backgroundColor: Colors.orange,
+
+          backgroundColor:
+          Colors.orange,
         ),
       );
+
       return;
     }
 
-    // ==========================================
+    // ==========================================================
     // PAID EVENT
-    // ==========================================
+    // ==========================================================
 
-    if (widget.eventType.toLowerCase() == "paid") {
+    if (widget.eventType
+        .toLowerCase() ==
+        "paid") {
+
       Navigator.push(
         context,
+
         MaterialPageRoute(
-          builder: (_) => PaymentScreen(
-            eventName: widget.eventName,
-            eventType: widget.eventType,
-            eventFee: widget.eventFee,
-            name: nameController.text.trim(),
-            email: emailController.text.trim(),
-            studentId: studentIdController.text.trim(),
-            department: departmentValue,
-            collegeName: collegeController.text.trim(),
-            collegeYear: yearValue,
-          ),
+          builder: (_) =>
+              PaymentScreen(
+
+                eventName:
+                widget.eventName,
+
+                eventType:
+                widget.eventType,
+
+                eventFee:
+                widget.eventFee,
+
+                // Student details
+                name:
+                nameController.text.trim(),
+
+                email:
+                emailController.text.trim(),
+
+                studentId:
+                studentIdController.text.trim(),
+
+                department:
+                departmentValue,
+
+                collegeName:
+                collegeController.text.trim(),
+
+                collegeYear:
+                yearValue,
+              ),
         ),
       );
 
       return;
     }
 
-    // ==========================================
+    // ==========================================================
     // FREE EVENT
-    // ==========================================
+    // ==========================================================
 
-    final registeredEvent = RegisteredEvent(
-      eventName: widget.eventName,
-      eventType: widget.eventType,
-      eventDate: '25 January 2027',
-      eventTime: '5:00 PM onwards',
-      venue: 'College Auditorium',
+    final registeredEvent =
+    RegisteredEvent(
+
+      // Event details
+      eventName:
+      widget.eventName,
+
+      eventType:
+      widget.eventType,
+
+      eventDate:
+      '25 January 2027',
+
+      eventTime:
+      '5:00 PM onwards',
+
+      venue:
+      'College Auditorium',
+
       passId:
       'SCH-${DateTime.now().millisecondsSinceEpoch}',
-      fee: widget.eventFee,
+
+      fee:
+      widget.eventFee,
+
+      // Student details
+      name:
+      nameController.text.trim(),
+
+      email:
+      emailController.text.trim(),
+
+      studentId:
+      studentIdController.text.trim(),
+
+      department:
+      departmentValue,
+
+      collegeName:
+      collegeController.text.trim(),
+
+      collegeYear:
+      yearValue,
     );
 
-    // Add FREE event directly to My Pass
-    PassManager.addPass(registeredEvent);
+    // ==========================================================
+    // SAVE FREE PASS
+    // ==========================================================
+
+    PassManager.addPass(
+      registeredEvent,
+    );
+
+    // ==========================================================
+    // SUCCESS DIALOG
+    // ==========================================================
 
     showDialog(
       context: context,
-      barrierDismissible: false,
+
+      barrierDismissible:
+      false,
+
       builder: (_) {
+
         return AlertDialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
+
+          shape:
+          RoundedRectangleBorder(
+            borderRadius:
+            BorderRadius.circular(
+              20,
+            ),
           ),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
+
+          content:
+          Column(
+            mainAxisSize:
+            MainAxisSize.min,
+
             children: [
+
               const Icon(
                 Icons.check_circle,
                 color: Colors.green,
                 size: 80,
               ),
 
-              const SizedBox(height: 15),
+              const SizedBox(
+                height: 15,
+              ),
 
               const Text(
                 "Registration Successful!",
-                style: TextStyle(
+
+                textAlign:
+                TextAlign.center,
+
+                style:
+                TextStyle(
                   fontSize: 20,
-                  fontWeight: FontWeight.bold,
+                  fontWeight:
+                  FontWeight.bold,
                 ),
               ),
 
-              const SizedBox(height: 10),
+              const SizedBox(
+                height: 10,
+              ),
 
               Text(
                 "You have registered for\n${widget.eventName}",
-                textAlign: TextAlign.center,
+
+                textAlign:
+                TextAlign.center,
               ),
 
-              const SizedBox(height: 20),
+              const SizedBox(
+                height: 20,
+              ),
 
               ElevatedButton(
                 onPressed: () {
+
                   Navigator.pushReplacement(
                     context,
+
                     MaterialPageRoute(
-                      builder: (_) => DigitalPassScreen(
-                        eventName: widget.eventName,
-                        eventType: widget.eventType,
-                        eventFee: widget.eventFee,
-                        paymentStatus: "Not Required",
-                        name: nameController.text.trim(),
-                        email: emailController.text.trim(),
-                        studentId:
-                        studentIdController.text.trim(),
-                        department: departmentValue,
-                        collegeName:
-                        collegeController.text.trim(),
-                        collegeYear: yearValue,
-                      ),
+                      builder: (_) =>
+                          DigitalPassScreen(
+
+                            eventName:
+                            widget.eventName,
+
+                            eventType:
+                            widget.eventType,
+
+                            eventFee:
+                            widget.eventFee,
+
+                            paymentStatus:
+                            "Not Required",
+
+                            // Student details
+                            name:
+                            nameController.text.trim(),
+
+                            email:
+                            emailController.text.trim(),
+
+                            studentId:
+                            studentIdController
+                                .text
+                                .trim(),
+
+                            department:
+                            departmentValue,
+
+                            collegeName:
+                            collegeController
+                                .text
+                                .trim(),
+
+                            collegeYear:
+                            yearValue,
+                          ),
                     ),
                   );
                 },
-                child: const Text("View Pass"),
+
+                child:
+                const Text(
+                  "View Pass",
+                ),
               ),
             ],
           ),
@@ -198,64 +351,85 @@ class _RegistrationScreenState
     );
   }
 
+  // ============================================================
+  // TEXT FIELD
+  // ============================================================
+
   Widget buildTextField({
     required TextEditingController controller,
     required String label,
     required IconData icon,
     bool isNumericOnly = false,
   }) {
+
     return TextFormField(
       controller: controller,
 
-      keyboardType: isNumericOnly
+      keyboardType:
+      isNumericOnly
           ? TextInputType.number
           : TextInputType.text,
 
-      inputFormatters: isNumericOnly
+      inputFormatters:
+      isNumericOnly
           ? [
-        FilteringTextInputFormatter.digitsOnly,
+        FilteringTextInputFormatter
+            .digitsOnly,
       ]
           : null,
 
       validator: (value) {
+
         if (value == null ||
             value.trim().isEmpty) {
+
           return "Please enter $label";
         }
 
         if (label == "Full Name" &&
             value.trim().length < 3) {
+
           return "Name must be at least 3 characters long";
         }
 
         if (label == "College Name" &&
             value.trim().length < 3) {
+
           return "Please enter valid college name";
         }
 
         if (label == "Email") {
-          final emailRegExp = RegExp(
+
+          final emailRegExp =
+          RegExp(
             r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
           );
 
           if (!emailRegExp.hasMatch(
             value.trim(),
           )) {
+
             return "Enter a valid email address";
           }
         }
 
-        if (label == "Student ID / PRN") {
+        if (label ==
+            "Student ID / PRN") {
+
           final numericRegExp =
-          RegExp(r'^[0-9]+$');
+          RegExp(
+            r'^[0-9]+$',
+          );
 
           if (!numericRegExp.hasMatch(
             value.trim(),
           )) {
+
             return "Student ID must contain numbers only";
           }
 
           if (value.trim().length < 4) {
+
             return "Enter a valid numeric ID";
           }
         }
@@ -263,34 +437,62 @@ class _RegistrationScreenState
         return null;
       },
 
-      decoration: InputDecoration(
-        prefixIcon: Icon(icon),
-        labelText: label,
+      decoration:
+      InputDecoration(
+
+        prefixIcon:
+        Icon(icon),
+
+        labelText:
+        label,
+
         filled: true,
-        fillColor: Colors.grey.shade100,
-        border: OutlineInputBorder(
+
+        fillColor:
+        Colors.grey.shade100,
+
+        border:
+        OutlineInputBorder(
           borderRadius:
-          BorderRadius.circular(15),
+          BorderRadius.circular(
+            15,
+          ),
         ),
       ),
     );
   }
 
+  // ============================================================
+  // BUILD
+  // ============================================================
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.grey.shade100,
 
-      appBar: AppBar(
-        title: const Text(
+    return Scaffold(
+
+      backgroundColor:
+      Colors.grey.shade100,
+
+      appBar:
+      AppBar(
+
+        title:
+        const Text(
           "Event Registration",
         ),
-        centerTitle: true,
-        foregroundColor: Colors.white,
 
-        flexibleSpace: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
+        centerTitle: true,
+
+        foregroundColor:
+        Colors.white,
+
+        flexibleSpace:
+        Container(
+          decoration:
+          const BoxDecoration(
+            gradient:
+            LinearGradient(
               colors: [
                 Color(0xff4A00E0),
                 Color(0xff8E2DE2),
@@ -300,20 +502,37 @@ class _RegistrationScreenState
         ),
       ),
 
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
+      body:
+      SingleChildScrollView(
 
-        child: Column(
+        padding:
+        const EdgeInsets.all(16),
+
+        child:
+        Column(
           children: [
+
+            // ==================================================
+            // EVENT HEADER
+            // ==================================================
+
             Container(
-              width: double.infinity,
-              height: 230,
+              width:
+              double.infinity,
 
-              decoration: BoxDecoration(
+              height:
+              230,
+
+              decoration:
+              BoxDecoration(
+
                 borderRadius:
-                BorderRadius.circular(20),
+                BorderRadius.circular(
+                  20,
+                ),
 
-                gradient: const LinearGradient(
+                gradient:
+                const LinearGradient(
                   colors: [
                     Color(0xff4A00E0),
                     Color(0xff8E2DE2),
@@ -321,24 +540,31 @@ class _RegistrationScreenState
                 ),
               ),
 
-              child: Column(
+              child:
+              Column(
                 mainAxisAlignment:
                 MainAxisAlignment.center,
 
                 children: [
+
                   const Icon(
                     Icons.event_available,
                     color: Colors.white,
                     size: 70,
                   ),
 
-                  const SizedBox(height: 10),
+                  const SizedBox(
+                    height: 10,
+                  ),
 
                   Text(
                     widget.eventName,
-                    textAlign: TextAlign.center,
 
-                    style: const TextStyle(
+                    textAlign:
+                    TextAlign.center,
+
+                    style:
+                    const TextStyle(
                       color: Colors.white,
                       fontSize: 24,
                       fontWeight:
@@ -346,7 +572,9 @@ class _RegistrationScreenState
                     ),
                   ),
 
-                  const SizedBox(height: 10),
+                  const SizedBox(
+                    height: 10,
+                  ),
 
                   Container(
                     padding:
@@ -355,7 +583,9 @@ class _RegistrationScreenState
                       vertical: 8,
                     ),
 
-                    decoration: BoxDecoration(
+                    decoration:
+                    BoxDecoration(
+
                       color:
                       widget.eventType
                           .toLowerCase() ==
@@ -369,14 +599,17 @@ class _RegistrationScreenState
                       ),
                     ),
 
-                    child: Text(
+                    child:
+                    Text(
+
                       widget.eventType
                           .toLowerCase() ==
                           "paid"
                           ? "Paid Event • ₹${widget.eventFee.toStringAsFixed(0)}"
                           : "Free Event",
 
-                      style: const TextStyle(
+                      style:
+                      const TextStyle(
                         color: Colors.white,
                         fontWeight:
                         FontWeight.bold,
@@ -384,11 +617,15 @@ class _RegistrationScreenState
                     ),
                   ),
 
-                  const SizedBox(height: 10),
+                  const SizedBox(
+                    height: 10,
+                  ),
 
                   const Text(
                     "Register & Get Your Digital Pass",
-                    style: TextStyle(
+
+                    style:
+                    TextStyle(
                       color: Colors.white70,
                     ),
                   ),
@@ -396,7 +633,13 @@ class _RegistrationScreenState
               ),
             ),
 
-            const SizedBox(height: 25),
+            const SizedBox(
+              height: 25,
+            ),
+
+            // ==================================================
+            // REGISTRATION FORM
+            // ==================================================
 
             Card(
               elevation: 10,
@@ -404,23 +647,35 @@ class _RegistrationScreenState
               shape:
               RoundedRectangleBorder(
                 borderRadius:
-                BorderRadius.circular(20),
+                BorderRadius.circular(
+                  20,
+                ),
               ),
 
-              child: Padding(
+              child:
+              Padding(
                 padding:
-                const EdgeInsets.all(25),
+                const EdgeInsets.all(
+                  25,
+                ),
 
-                child: Form(
+                child:
+                Form(
                   key: _formKey,
 
-                  child: Column(
+                  child:
+                  Column(
                     children: [
+
                       buildTextField(
                         controller:
                         nameController,
-                        label: "Full Name",
-                        icon: Icons.person,
+
+                        label:
+                        "Full Name",
+
+                        icon:
+                        Icons.person,
                       ),
 
                       const SizedBox(
@@ -430,8 +685,12 @@ class _RegistrationScreenState
                       buildTextField(
                         controller:
                         emailController,
-                        label: "Email",
-                        icon: Icons.email,
+
+                        label:
+                        "Email",
+
+                        icon:
+                        Icons.email,
                       ),
 
                       const SizedBox(
@@ -441,10 +700,15 @@ class _RegistrationScreenState
                       buildTextField(
                         controller:
                         studentIdController,
+
                         label:
                         "Student ID / PRN",
-                        icon: Icons.badge,
-                        isNumericOnly: true,
+
+                        icon:
+                        Icons.badge,
+
+                        isNumericOnly:
+                        true,
                       ),
 
                       const SizedBox(
@@ -454,7 +718,10 @@ class _RegistrationScreenState
                       buildTextField(
                         controller:
                         collegeController,
-                        label: "College Name",
+
+                        label:
+                        "College Name",
+
                         icon:
                         Icons.account_balance,
                       ),
@@ -463,21 +730,30 @@ class _RegistrationScreenState
                         height: 20,
                       ),
 
+                      // ==================================================
+                      // DEPARTMENT
+                      // ==================================================
+
                       DropdownButtonFormField<String>(
                         value:
                         _selectedDepartment,
 
                         decoration:
                         InputDecoration(
+
                           prefixIcon:
                           const Icon(
                             Icons.school,
                           ),
+
                           labelText:
                           "Department",
+
                           filled: true,
+
                           fillColor:
                           Colors.grey.shade100,
+
                           border:
                           OutlineInputBorder(
                             borderRadius:
@@ -488,18 +764,24 @@ class _RegistrationScreenState
                           ),
                         ),
 
-                        items: _departments
+                        items:
+                        _departments
                             .map(
                               (dept) =>
                               DropdownMenuItem(
-                                value: dept,
+                                value:
+                                dept,
+
                                 child:
-                                Text(dept),
+                                Text(
+                                  dept,
+                                ),
                               ),
                         )
                             .toList(),
 
                         onChanged: (val) {
+
                           setState(() {
                             _selectedDepartment =
                                 val;
@@ -507,8 +789,10 @@ class _RegistrationScreenState
                         },
 
                         validator: (val) {
+
                           if (val == null ||
                               val.isEmpty) {
+
                             return "Please select your department";
                           }
 
@@ -520,22 +804,30 @@ class _RegistrationScreenState
                         height: 20,
                       ),
 
+                      // ==================================================
+                      // COLLEGE YEAR
+                      // ==================================================
+
                       DropdownButtonFormField<String>(
                         value:
                         _selectedCollegeYear,
 
                         decoration:
                         InputDecoration(
+
                           prefixIcon:
                           const Icon(
-                            Icons
-                                .calendar_today,
+                            Icons.calendar_today,
                           ),
+
                           labelText:
                           "College Year",
+
                           filled: true,
+
                           fillColor:
                           Colors.grey.shade100,
+
                           border:
                           OutlineInputBorder(
                             borderRadius:
@@ -546,18 +838,24 @@ class _RegistrationScreenState
                           ),
                         ),
 
-                        items: _collegeYears
+                        items:
+                        _collegeYears
                             .map(
                               (year) =>
                               DropdownMenuItem(
-                                value: year,
+                                value:
+                                year,
+
                                 child:
-                                Text(year),
+                                Text(
+                                  year,
+                                ),
                               ),
                         )
                             .toList(),
 
                         onChanged: (val) {
+
                           setState(() {
                             _selectedCollegeYear =
                                 val;
@@ -565,8 +863,10 @@ class _RegistrationScreenState
                         },
 
                         validator: (val) {
+
                           if (val == null ||
                               val.isEmpty) {
+
                             return "Please select your academic year";
                           }
 
@@ -578,24 +878,34 @@ class _RegistrationScreenState
                         height: 30,
                       ),
 
+                      // ==================================================
+                      // REGISTER
+                      // ==================================================
+
                       SizedBox(
                         width:
                         double.infinity,
-                        height: 55,
+
+                        height:
+                        55,
 
                         child:
                         ElevatedButton(
+
                           onPressed:
                           submitForm,
 
                           style:
                           ElevatedButton
                               .styleFrom(
+
                             backgroundColor:
                             Colors
                                 .deepPurple,
+
                             foregroundColor:
                             Colors.white,
+
                             shape:
                             RoundedRectangleBorder(
                               borderRadius:
@@ -606,9 +916,13 @@ class _RegistrationScreenState
                             ),
                           ),
 
-                          child: const Text(
+                          child:
+                          const Text(
+
                             "REGISTER NOW",
-                            style: TextStyle(
+
+                            style:
+                            TextStyle(
                               fontSize: 18,
                               fontWeight:
                               FontWeight.bold,
