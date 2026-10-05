@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 
 // Member 1
@@ -13,10 +12,11 @@ import 'Madhuri/event_details_screen.dart';
 // Member 3
 import 'Santoshi/registration_screen.dart';
 
-//Member 4
+// Member 4
 import 'Riya/my_pass_screen.dart';
 import 'Riya/profile_screen.dart';
 import 'Riya/about_screen.dart';
+import 'Riya/main_navigation.dart';
 
 // Event Model
 import 'models/event_model.dart';
@@ -31,42 +31,49 @@ class SmartCampusApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Smart Campus Event Hub',
+        debugShowCheckedModeBanner: false,
+        title: 'Smart Campus Event Hub',
 
-      theme: ThemeData(
-        primarySwatch: Colors.deepPurple,
-        scaffoldBackgroundColor: const Color(0xFFF7F7FB),
-        useMaterial3: true,
-      ),
-
-      initialRoute: '/splash',
-
-      routes: {
-        '/splash': (context) => const SplashScreen(),
-
-        '/home': (context) => const HomeScreen(),
-
-        '/events': (context) => const MadhuriEventsScreen(),
-
-        '/clubs': (context) => const ClubsScreen(),
-
-        // FIXED: Event Detail Navigation
-        '/event-detail': (context) {
-          final event =
-          ModalRoute.of(context)!.settings.arguments as EventModel;
-
-          return MadhuriEventDetailScreen(
-            event: event,
-          );
-        },
-
-        '/registration': (context) => const RegistrationScreen(
-          eventName: "Tech Fest 2026",
-          eventType: "Paid",
-          eventFee: 300,
+        theme: ThemeData(
+          primarySwatch: Colors.deepPurple,
+          scaffoldBackgroundColor: const Color(0xFFF7F7FB),
+          useMaterial3: true,
         ),
-      },
+
+        initialRoute: '/splash',
+
+        routes: {
+          '/splash': (context) => const SplashScreen(),
+
+          // Member 1 Home + Member 4 Navigation
+          '/home': (context) => const MainNavigation(
+            home: HomeScreen(),
+          ),
+
+          '/events': (context) => const MadhuriEventsScreen(),
+
+          '/clubs': (context) => const ClubsScreen(),
+
+          // FIXED: Event Detail Navigation
+          '/event-detail': (context) {
+            final event =
+            ModalRoute
+                .of(context)!
+                .settings
+                .arguments as EventModel;
+
+            return MadhuriEventDetailScreen(
+              event: event,
+            );
+          },
+
+          '/registration': (context) =>
+          const RegistrationScreen(
+            eventName: "Tech Fest 2026",
+            eventType: "Paid",
+            eventFee: 300,
+          ),
+        }
     );
   }
 }

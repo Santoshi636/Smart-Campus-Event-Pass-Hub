@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+
 import 'digital_pass_screen.dart';
 import 'payment_screen.dart';
+
+import '../models/pass_manager.dart';
+import '../models/registered_event.dart';
 
 class RegistrationScreen extends StatefulWidget {
   final String eventName;
@@ -16,11 +20,15 @@ class RegistrationScreen extends StatefulWidget {
   });
 
   @override
-  State<RegistrationScreen> createState() => _RegistrationScreenState();
+  State<RegistrationScreen> createState() =>
+      _RegistrationScreenState();
 }
 
-class _RegistrationScreenState extends State<RegistrationScreen> {
+class _RegistrationScreenState
+    extends State<RegistrationScreen> {
+
   final _formKey = GlobalKey<FormState>();
+
   final nameController = TextEditingController();
   final emailController = TextEditingController();
   final studentIdController = TextEditingController();
@@ -34,14 +42,14 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     'BSc CS',
     'B.Tech AI & DS',
     'BCA',
-    'MCA / MSc IT'
+    'MCA / MSc IT',
   ];
 
   final List<String> _collegeYears = [
     '1st Year (FY)',
     '2nd Year (SY)',
     '3rd Year (TY)',
-    '4th Year / Postgrad'
+    '4th Year / Postgrad',
   ];
 
   @override
@@ -54,85 +62,140 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   }
 
   void submitForm() {
-    if (_formKey.currentState!.validate()) {
-      final departmentValue = _selectedDepartment ?? '';
-      final yearValue = _selectedCollegeYear ?? '';
-
-      if (widget.eventType == "Paid") {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (_) => PaymentScreen(
-              eventName: widget.eventName,
-              eventType: widget.eventType,
-              eventFee: widget.eventFee,
-              name: nameController.text.trim(),
-              email: emailController.text.trim(),
-              studentId: studentIdController.text.trim(),
-              department: _selectedDepartment ?? '',
-              collegeName: collegeController.text.trim(),
-              collegeYear: _selectedCollegeYear ?? '',
-            ),
-          ),
-        );
-      } else {
-        showDialog(
-          context: context,
-          barrierDismissible: false,
-          builder: (_) => AlertDialog(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(20),
-            ),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Icon(
-                  Icons.check_circle,
-                  color: Colors.green,
-                  size: 80,
-                ),
-                const SizedBox(height: 15),
-                const Text(
-                  "Registration Successful!",
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 10),
-                Text(
-                  "You have registered for\n${widget.eventName}",
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 20),
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => DigitalPassScreen(
-                          eventName: widget.eventName,
-                          eventType: widget.eventType,
-                          eventFee: widget.eventFee,
-                          paymentStatus: "Not Required",
-                          name: nameController.text.trim(),
-                          email: emailController.text.trim(),
-                          studentId: studentIdController.text.trim(),
-                          department: _selectedDepartment ?? '',
-                          collegeName: collegeController.text.trim(), // Added
-                          collegeYear: _selectedCollegeYear ?? '',    // Added
-                        ),
-                      ),
-                    );
-                  },
-                  child: const Text("View Pass"),
-                ),
-              ],
-            ),
-          ),
-        );
-      }
+    if (!_formKey.currentState!.validate()) {
+      return;
     }
+
+    final departmentValue =
+        _selectedDepartment ?? '';
+
+    final yearValue =
+        _selectedCollegeYear ?? '';
+
+    // ==========================================
+    // CHECK DUPLICATE REGISTRATION
+    // ==========================================
+
+    if (PassManager.hasPass(widget.eventName)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'You have already registered for this event.',
+          ),
+          backgroundColor: Colors.orange,
+        ),
+      );
+      return;
+    }
+
+    // ==========================================
+    // PAID EVENT
+    // ==========================================
+
+    if (widget.eventType.toLowerCase() == "paid") {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => PaymentScreen(
+            eventName: widget.eventName,
+            eventType: widget.eventType,
+            eventFee: widget.eventFee,
+            name: nameController.text.trim(),
+            email: emailController.text.trim(),
+            studentId: studentIdController.text.trim(),
+            department: departmentValue,
+            collegeName: collegeController.text.trim(),
+            collegeYear: yearValue,
+          ),
+        ),
+      );
+
+      return;
+    }
+
+    // ==========================================
+    // FREE EVENT
+    // ==========================================
+
+    final registeredEvent = RegisteredEvent(
+      eventName: widget.eventName,
+      eventType: widget.eventType,
+      eventDate: '25 January 2027',
+      eventTime: '5:00 PM onwards',
+      venue: 'College Auditorium',
+      passId:
+      'SCH-${DateTime.now().millisecondsSinceEpoch}',
+      fee: widget.eventFee,
+    );
+
+    // Add FREE event directly to My Pass
+    PassManager.addPass(registeredEvent);
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(
+                Icons.check_circle,
+                color: Colors.green,
+                size: 80,
+              ),
+
+              const SizedBox(height: 15),
+
+              const Text(
+                "Registration Successful!",
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+
+              const SizedBox(height: 10),
+
+              Text(
+                "You have registered for\n${widget.eventName}",
+                textAlign: TextAlign.center,
+              ),
+
+              const SizedBox(height: 20),
+
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => DigitalPassScreen(
+                        eventName: widget.eventName,
+                        eventType: widget.eventType,
+                        eventFee: widget.eventFee,
+                        paymentStatus: "Not Required",
+                        name: nameController.text.trim(),
+                        email: emailController.text.trim(),
+                        studentId:
+                        studentIdController.text.trim(),
+                        department: departmentValue,
+                        collegeName:
+                        collegeController.text.trim(),
+                        collegeYear: yearValue,
+                      ),
+                    ),
+                  );
+                },
+                child: const Text("View Pass"),
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   Widget buildTextField({
@@ -143,50 +206,71 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   }) {
     return TextFormField(
       controller: controller,
-      keyboardType: isNumericOnly ? TextInputType.number : TextInputType.text,
+
+      keyboardType: isNumericOnly
+          ? TextInputType.number
+          : TextInputType.text,
+
       inputFormatters: isNumericOnly
-          ? [FilteringTextInputFormatter.digitsOnly]
+          ? [
+        FilteringTextInputFormatter.digitsOnly,
+      ]
           : null,
+
       validator: (value) {
-        if (value == null || value.trim().isEmpty) {
+        if (value == null ||
+            value.trim().isEmpty) {
           return "Please enter $label";
         }
 
-        if (label == "Full Name" && value.trim().length < 3) {
+        if (label == "Full Name" &&
+            value.trim().length < 3) {
           return "Name must be at least 3 characters long";
         }
 
-        if (label == "College Name" && value.trim().length < 3) {
+        if (label == "College Name" &&
+            value.trim().length < 3) {
           return "Please enter valid college name";
         }
 
         if (label == "Email") {
-          final emailRegExp = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
-          if (!emailRegExp.hasMatch(value.trim())) {
+          final emailRegExp = RegExp(
+            r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
+          );
+
+          if (!emailRegExp.hasMatch(
+            value.trim(),
+          )) {
             return "Enter a valid email address";
           }
         }
 
-        // Numeric validation for Student ID
         if (label == "Student ID / PRN") {
-          final numericRegExp = RegExp(r'^[0-9]+$');
-          if (!numericRegExp.hasMatch(value.trim())) {
+          final numericRegExp =
+          RegExp(r'^[0-9]+$');
+
+          if (!numericRegExp.hasMatch(
+            value.trim(),
+          )) {
             return "Student ID must contain numbers only";
           }
+
           if (value.trim().length < 4) {
-            return "Enter a valid numeric ID (at least 4 digits)";
+            return "Enter a valid numeric ID";
           }
         }
 
         return null;
       },
+
       decoration: InputDecoration(
         prefixIcon: Icon(icon),
         labelText: label,
         filled: true,
         fillColor: Colors.grey.shade100,
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(15),
+          borderRadius:
+          BorderRadius.circular(15),
         ),
       ),
     );
@@ -196,203 +280,338 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey.shade100,
+
       appBar: AppBar(
-        title: const Text("Event Registration"),
+        title: const Text(
+          "Event Registration",
+        ),
         centerTitle: true,
         foregroundColor: Colors.white,
+
         flexibleSpace: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
-              colors: [Color(0xff4A00E0), Color(0xff8E2DE2)],
+              colors: [
+                Color(0xff4A00E0),
+                Color(0xff8E2DE2),
+              ],
             ),
           ),
         ),
       ),
+
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
+
         child: Column(
           children: [
             Container(
               width: double.infinity,
               height: 230,
+
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20),
+                borderRadius:
+                BorderRadius.circular(20),
+
                 gradient: const LinearGradient(
-                  colors: [Color(0xff4A00E0), Color(0xff8E2DE2)],
+                  colors: [
+                    Color(0xff4A00E0),
+                    Color(0xff8E2DE2),
+                  ],
                 ),
               ),
+
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisAlignment:
+                MainAxisAlignment.center,
+
                 children: [
                   const Icon(
                     Icons.event_available,
                     color: Colors.white,
                     size: 70,
                   ),
+
                   const SizedBox(height: 10),
+
                   Text(
                     widget.eventName,
                     textAlign: TextAlign.center,
+
                     style: const TextStyle(
                       color: Colors.white,
                       fontSize: 24,
-                      fontWeight: FontWeight.bold,
+                      fontWeight:
+                      FontWeight.bold,
                     ),
                   ),
+
                   const SizedBox(height: 10),
+
                   Container(
-                    padding: const EdgeInsets.symmetric(
+                    padding:
+                    const EdgeInsets.symmetric(
                       horizontal: 16,
                       vertical: 8,
                     ),
+
                     decoration: BoxDecoration(
-                      color: widget.eventType == "Paid"
+                      color:
+                      widget.eventType
+                          .toLowerCase() ==
+                          "paid"
                           ? Colors.orange
                           : Colors.green,
-                      borderRadius: BorderRadius.circular(20),
+
+                      borderRadius:
+                      BorderRadius.circular(
+                        20,
+                      ),
                     ),
+
                     child: Text(
-                      widget.eventType == "Paid"
+                      widget.eventType
+                          .toLowerCase() ==
+                          "paid"
                           ? "Paid Event • ₹${widget.eventFee.toStringAsFixed(0)}"
                           : "Free Event",
+
                       style: const TextStyle(
                         color: Colors.white,
-                        fontWeight: FontWeight.bold,
+                        fontWeight:
+                        FontWeight.bold,
                       ),
                     ),
                   ),
+
                   const SizedBox(height: 10),
+
                   const Text(
                     "Register & Get Your Digital Pass",
-                    style: TextStyle(color: Colors.white70),
+                    style: TextStyle(
+                      color: Colors.white70,
+                    ),
                   ),
                 ],
               ),
             ),
+
             const SizedBox(height: 25),
+
             Card(
               elevation: 10,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20),
+
+              shape:
+              RoundedRectangleBorder(
+                borderRadius:
+                BorderRadius.circular(20),
               ),
+
               child: Padding(
-                padding: const EdgeInsets.all(25),
+                padding:
+                const EdgeInsets.all(25),
+
                 child: Form(
                   key: _formKey,
+
                   child: Column(
                     children: [
                       buildTextField(
-                        controller: nameController,
+                        controller:
+                        nameController,
                         label: "Full Name",
                         icon: Icons.person,
                       ),
-                      const SizedBox(height: 20),
+
+                      const SizedBox(
+                        height: 20,
+                      ),
 
                       buildTextField(
-                        controller: emailController,
+                        controller:
+                        emailController,
                         label: "Email",
                         icon: Icons.email,
                       ),
-                      const SizedBox(height: 20),
 
-                      // Student ID (Numbers Only)
+                      const SizedBox(
+                        height: 20,
+                      ),
+
                       buildTextField(
-                        controller: studentIdController,
-                        label: "Student ID / PRN",
+                        controller:
+                        studentIdController,
+                        label:
+                        "Student ID / PRN",
                         icon: Icons.badge,
                         isNumericOnly: true,
                       ),
-                      const SizedBox(height: 20),
 
-                      // College Name Field
+                      const SizedBox(
+                        height: 20,
+                      ),
+
                       buildTextField(
-                        controller: collegeController,
+                        controller:
+                        collegeController,
                         label: "College Name",
-                        icon: Icons.account_balance,
+                        icon:
+                        Icons.account_balance,
                       ),
-                      const SizedBox(height: 20),
 
-                      // Department Selection Dropdown
+                      const SizedBox(
+                        height: 20,
+                      ),
+
                       DropdownButtonFormField<String>(
-                        value: _selectedDepartment,
-                        decoration: InputDecoration(
-                          prefixIcon: const Icon(Icons.school),
-                          labelText: "Department",
-                          filled: true,
-                          fillColor: Colors.grey.shade100,
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(15),
-                          ),
-                        ),
-                        items: _departments.map((dept) {
-                          return DropdownMenuItem(
-                            value: dept,
-                            child: Text(dept),
-                          );
-                        }).toList(),
-                        onChanged: (val) {
-                          setState(() {
-                            _selectedDepartment = val;
-                          });
-                        },
-                        validator: (val) {
-                          if (val == null || val.isEmpty) {
-                            return "Please select your department";
-                          }
-                          return null;
-                        },
-                      ),
-                      const SizedBox(height: 20),
+                        value:
+                        _selectedDepartment,
 
-                      // College Year Dropdown
-                      DropdownButtonFormField<String>(
-                        value: _selectedCollegeYear,
-                        decoration: InputDecoration(
-                          prefixIcon: const Icon(Icons.calendar_today),
-                          labelText: "College Year",
-                          filled: true,
-                          fillColor: Colors.grey.shade100,
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(15),
+                        decoration:
+                        InputDecoration(
+                          prefixIcon:
+                          const Icon(
+                            Icons.school,
                           ),
-                        ),
-                        items: _collegeYears.map((year) {
-                          return DropdownMenuItem(
-                            value: year,
-                            child: Text(year),
-                          );
-                        }).toList(),
-                        onChanged: (val) {
-                          setState(() {
-                            _selectedCollegeYear = val;
-                          });
-                        },
-                        validator: (val) {
-                          if (val == null || val.isEmpty) {
-                            return "Please select your academic year";
-                          }
-                          return null;
-                        },
-                      ),
-                      const SizedBox(height: 30),
-
-                      SizedBox(
-                        width: double.infinity,
-                        height: 55,
-                        child: ElevatedButton(
-                          onPressed: submitForm,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.deepPurple,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(15),
+                          labelText:
+                          "Department",
+                          filled: true,
+                          fillColor:
+                          Colors.grey.shade100,
+                          border:
+                          OutlineInputBorder(
+                            borderRadius:
+                            BorderRadius
+                                .circular(
+                              15,
                             ),
                           ),
+                        ),
+
+                        items: _departments
+                            .map(
+                              (dept) =>
+                              DropdownMenuItem(
+                                value: dept,
+                                child:
+                                Text(dept),
+                              ),
+                        )
+                            .toList(),
+
+                        onChanged: (val) {
+                          setState(() {
+                            _selectedDepartment =
+                                val;
+                          });
+                        },
+
+                        validator: (val) {
+                          if (val == null ||
+                              val.isEmpty) {
+                            return "Please select your department";
+                          }
+
+                          return null;
+                        },
+                      ),
+
+                      const SizedBox(
+                        height: 20,
+                      ),
+
+                      DropdownButtonFormField<String>(
+                        value:
+                        _selectedCollegeYear,
+
+                        decoration:
+                        InputDecoration(
+                          prefixIcon:
+                          const Icon(
+                            Icons
+                                .calendar_today,
+                          ),
+                          labelText:
+                          "College Year",
+                          filled: true,
+                          fillColor:
+                          Colors.grey.shade100,
+                          border:
+                          OutlineInputBorder(
+                            borderRadius:
+                            BorderRadius
+                                .circular(
+                              15,
+                            ),
+                          ),
+                        ),
+
+                        items: _collegeYears
+                            .map(
+                              (year) =>
+                              DropdownMenuItem(
+                                value: year,
+                                child:
+                                Text(year),
+                              ),
+                        )
+                            .toList(),
+
+                        onChanged: (val) {
+                          setState(() {
+                            _selectedCollegeYear =
+                                val;
+                          });
+                        },
+
+                        validator: (val) {
+                          if (val == null ||
+                              val.isEmpty) {
+                            return "Please select your academic year";
+                          }
+
+                          return null;
+                        },
+                      ),
+
+                      const SizedBox(
+                        height: 30,
+                      ),
+
+                      SizedBox(
+                        width:
+                        double.infinity,
+                        height: 55,
+
+                        child:
+                        ElevatedButton(
+                          onPressed:
+                          submitForm,
+
+                          style:
+                          ElevatedButton
+                              .styleFrom(
+                            backgroundColor:
+                            Colors
+                                .deepPurple,
+                            foregroundColor:
+                            Colors.white,
+                            shape:
+                            RoundedRectangleBorder(
+                              borderRadius:
+                              BorderRadius
+                                  .circular(
+                                15,
+                              ),
+                            ),
+                          ),
+
                           child: const Text(
                             "REGISTER NOW",
                             style: TextStyle(
-                              color: Colors.white,
                               fontSize: 18,
-                              fontWeight: FontWeight.bold,
+                              fontWeight:
+                              FontWeight.bold,
                             ),
                           ),
                         ),

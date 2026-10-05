@@ -1,54 +1,624 @@
 import 'package:flutter/material.dart';
 
-class MyPassScreen extends StatelessWidget {
+import '../models/pass_manager.dart';
+import '../models/registered_event.dart';
+
+class MyPassScreen extends StatefulWidget {
   const MyPassScreen({super.key});
 
   @override
+  State<MyPassScreen> createState() =>
+      _MyPassScreenState();
+}
+
+class _MyPassScreenState
+    extends State<MyPassScreen> {
+
+  static const Color primaryPurple =
+  Color(0xFF6200EE);
+
+  @override
+  void initState() {
+    super.initState();
+
+    _refresh();
+  }
+
+  void _refresh() {
+    WidgetsBinding.instance
+        .addPostFrameCallback((_) {
+      if (mounted) {
+        setState(() {});
+      }
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final List<RegisteredEvent> passes =
+    List<RegisteredEvent>.from(
+      PassManager.myPasses,
+    );
+
     return Scaffold(
+      backgroundColor:
+      const Color(0xFFF8F8FA),
+
       appBar: AppBar(
-        title: const Text("My Pass"),
+        backgroundColor:
+        const Color(0xFFF8F8FA),
+        elevation: 0,
+
+        title: const Text(
+          'My Pass',
+          style: TextStyle(
+            color: Colors.black,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+
+        iconTheme:
+        const IconThemeData(
+          color: Colors.black,
+        ),
       ),
-      body: Center(
-        child: Card(
-          margin: const EdgeInsets.all(20),
-          child: Padding(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Icon(
-                  Icons.confirmation_number,
-                  size: 60,
+
+      body: passes.isEmpty
+          ? _emptyPassScreen()
+          : RefreshIndicator(
+        onRefresh: () async {
+          setState(() {});
+        },
+
+        child: ListView(
+          padding:
+          const EdgeInsets.all(16),
+
+          children: [
+            const Text(
+              'My Registered Events',
+              style: TextStyle(
+                fontSize: 21,
+                fontWeight:
+                FontWeight.bold,
+              ),
+            ),
+
+            const SizedBox(height: 5),
+
+            const Text(
+              'Events you have successfully registered for.',
+              style: TextStyle(
+                color: Colors.grey,
+                fontSize: 13,
+              ),
+            ),
+
+            const SizedBox(
+              height: 20,
+            ),
+
+            ...passes.map(
+                  (pass) =>
+                  _passCard(pass),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _emptyPassScreen() {
+    return Center(
+      child: Padding(
+        padding:
+        const EdgeInsets.all(30),
+
+        child: Column(
+          mainAxisAlignment:
+          MainAxisAlignment.center,
+
+          children: [
+            Container(
+              height: 100,
+              width: 100,
+
+              decoration:
+              const BoxDecoration(
+                color:
+                Color(0xFFF1E8FF),
+                shape: BoxShape.circle,
+              ),
+
+              child: const Icon(
+                Icons
+                    .confirmation_number_outlined,
+                size: 50,
+                color: primaryPurple,
+              ),
+            ),
+
+            const SizedBox(height: 20),
+
+            const Text(
+              'No Passes Yet',
+              style: TextStyle(
+                fontSize: 22,
+                fontWeight:
+                FontWeight.bold,
+              ),
+            ),
+
+            const SizedBox(height: 8),
+
+            const Text(
+              'You have not registered for any events yet.\n'
+                  'Register for an event and your pass will appear here.',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: Colors.grey,
+                fontSize: 13,
+                height: 1.5,
+              ),
+            ),
+
+            const SizedBox(height: 25),
+
+            SizedBox(
+              height: 48,
+
+              child:
+              ElevatedButton.icon(
+                onPressed: () {
+                  Navigator.pushNamed(
+                    context,
+                    '/events',
+                  );
+                },
+
+                icon: const Icon(
+                  Icons.event_outlined,
                 ),
 
-                const SizedBox(height: 15),
-
-                const Text(
-                  "Event Pass",
+                label: const Text(
+                  'Explore Events',
                   style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
+                    fontWeight:
+                    FontWeight.bold,
                   ),
                 ),
 
-                const SizedBox(height: 10),
+                style:
+                ElevatedButton.styleFrom(
+                  backgroundColor:
+                  primaryPurple,
+                  foregroundColor:
+                  Colors.white,
 
-                const Text("Student Name: Your Name"),
-                const Text("Event: College Fest"),
-                const Text("Date: 10 October 2026"),
+                  shape:
+                  RoundedRectangleBorder(
+                    borderRadius:
+                    BorderRadius.circular(
+                      15,
+                    ),
+                  ),
 
-                const SizedBox(height: 15),
-
-                ElevatedButton(
-                  onPressed: () {},
-                  child: const Text("View Pass"),
+                  elevation: 0,
                 ),
-              ],
+              ),
             ),
-          ),
+          ],
         ),
       ),
+    );
+  }
+
+  Widget _passCard(
+      RegisteredEvent pass) {
+
+    return GestureDetector(
+      onTap: () {
+        _showPassDetails(pass);
+      },
+
+      child: Container(
+        margin:
+        const EdgeInsets.only(
+          bottom: 18,
+        ),
+
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius:
+          BorderRadius.circular(22),
+
+          boxShadow: const [
+            BoxShadow(
+              color: Color(0x12000000),
+              blurRadius: 12,
+              offset: Offset(0, 5),
+            ),
+          ],
+        ),
+
+        child: Column(
+          children: [
+            Container(
+              width: double.infinity,
+
+              padding:
+              const EdgeInsets.all(18),
+
+              decoration:
+              const BoxDecoration(
+                gradient:
+                LinearGradient(
+                  colors: [
+                    Color(0xFF6200EE),
+                    Color(0xFF8E2DE2),
+                  ],
+                ),
+
+                borderRadius:
+                BorderRadius.only(
+                  topLeft:
+                  Radius.circular(22),
+                  topRight:
+                  Radius.circular(22),
+                ),
+              ),
+
+              child: Row(
+                children: [
+                  Container(
+                    height: 45,
+                    width: 45,
+
+                    decoration:
+                    BoxDecoration(
+                      color: Colors.white,
+                      borderRadius:
+                      BorderRadius.circular(
+                        13,
+                      ),
+                    ),
+
+                    child: const Icon(
+                      Icons.event,
+                      color:
+                      primaryPurple,
+                    ),
+                  ),
+
+                  const SizedBox(
+                    width: 12,
+                  ),
+
+                  Expanded(
+                    child: Text(
+                      pass.eventName,
+                      style:
+                      const TextStyle(
+                        color: Colors.white,
+                        fontSize: 17,
+                        fontWeight:
+                        FontWeight.bold,
+                      ),
+                    ),
+                  ),
+
+                  Container(
+                    padding:
+                    const EdgeInsets
+                        .symmetric(
+                      horizontal: 9,
+                      vertical: 5,
+                    ),
+
+                    decoration:
+                    BoxDecoration(
+                      color: Colors.white
+                          .withOpacity(
+                        0.2,
+                      ),
+                      borderRadius:
+                      BorderRadius.circular(
+                        20,
+                      ),
+                    ),
+
+                    child: Text(
+                      pass.fee == 0
+                          ? 'FREE'
+                          : 'PAID',
+
+                      style:
+                      const TextStyle(
+                        color: Colors.white,
+                        fontSize: 9,
+                        fontWeight:
+                        FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            Padding(
+              padding:
+              const EdgeInsets.all(18),
+
+              child: Column(
+                children: [
+                  _detailRow(
+                    Icons
+                        .calendar_today_outlined,
+                    'Date',
+                    pass.eventDate,
+                  ),
+
+                  _detailRow(
+                    Icons
+                        .access_time_outlined,
+                    'Time',
+                    pass.eventTime,
+                  ),
+
+                  _detailRow(
+                    Icons
+                        .location_on_outlined,
+                    'Venue',
+                    pass.venue,
+                  ),
+
+                  _detailRow(
+                    Icons.badge_outlined,
+                    'Pass ID',
+                    pass.passId,
+                  ),
+
+                  const SizedBox(
+                    height: 8,
+                  ),
+
+                  const Divider(),
+
+                  const SizedBox(
+                    height: 10,
+                  ),
+
+                  Row(
+                    children: [
+                      const Icon(
+                        Icons.check_circle,
+                        color: Colors.green,
+                        size: 20,
+                      ),
+
+                      const SizedBox(
+                        width: 8,
+                      ),
+
+                      Text(
+                        pass.fee == 0
+                            ? 'Free registration confirmed'
+                            : 'Payment successful',
+
+                        style:
+                        const TextStyle(
+                          color: Colors.green,
+                          fontWeight:
+                          FontWeight.w600,
+                          fontSize: 12,
+                        ),
+                      ),
+
+                      const Spacer(),
+
+                      const Icon(
+                        Icons.chevron_right,
+                        color: Colors.grey,
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _detailRow(
+      IconData icon,
+      String title,
+      String value,
+      ) {
+    return Padding(
+      padding:
+      const EdgeInsets.only(
+        bottom: 13,
+      ),
+
+      child: Row(
+        children: [
+          Icon(
+            icon,
+            size: 19,
+            color: primaryPurple,
+          ),
+
+          const SizedBox(width: 10),
+
+          Text(
+            '$title: ',
+            style: const TextStyle(
+              color: Colors.grey,
+              fontSize: 12,
+            ),
+          ),
+
+          Expanded(
+            child: Text(
+              value,
+              style: const TextStyle(
+                fontSize: 12,
+                fontWeight:
+                FontWeight.w600,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showPassDetails(
+      RegisteredEvent pass) {
+
+    showModalBottomSheet(
+      context: context,
+
+      backgroundColor:
+      Colors.transparent,
+
+      builder: (context) {
+        return Container(
+          padding:
+          const EdgeInsets.all(22),
+
+          decoration:
+          const BoxDecoration(
+            color: Colors.white,
+
+            borderRadius:
+            BorderRadius.only(
+              topLeft:
+              Radius.circular(25),
+              topRight:
+              Radius.circular(25),
+            ),
+          ),
+
+          child: Column(
+            mainAxisSize:
+            MainAxisSize.min,
+
+            children: [
+              Container(
+                height: 5,
+                width: 45,
+
+                decoration:
+                BoxDecoration(
+                  color:
+                  Colors.grey.shade300,
+                  borderRadius:
+                  BorderRadius.circular(
+                    10,
+                  ),
+                ),
+              ),
+
+              const SizedBox(
+                height: 20,
+              ),
+
+              const Icon(
+                Icons.confirmation_number,
+                color: primaryPurple,
+                size: 45,
+              ),
+
+              const SizedBox(
+                height: 12,
+              ),
+
+              Text(
+                pass.eventName,
+                textAlign:
+                TextAlign.center,
+
+                style:
+                const TextStyle(
+                  fontSize: 20,
+                  fontWeight:
+                  FontWeight.bold,
+                ),
+              ),
+
+              const SizedBox(
+                height: 8,
+              ),
+
+              Text(
+                pass.fee == 0
+                    ? 'FREE EVENT'
+                    : 'PAID EVENT • ₹${pass.fee.toStringAsFixed(0)}',
+
+                style:
+                const TextStyle(
+                  color: primaryPurple,
+                  fontWeight:
+                  FontWeight.bold,
+                  fontSize: 12,
+                ),
+              ),
+
+              const SizedBox(
+                height: 20,
+              ),
+
+              Text(
+                'Pass ID: ${pass.passId}',
+                style:
+                const TextStyle(
+                  color: Colors.grey,
+                ),
+              ),
+
+              const SizedBox(
+                height: 20,
+              ),
+
+              SizedBox(
+                width: double.infinity,
+                height: 48,
+
+                child:
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.pop(
+                      context,
+                    );
+                  },
+
+                  style:
+                  ElevatedButton.styleFrom(
+                    backgroundColor:
+                    primaryPurple,
+                    foregroundColor:
+                    Colors.white,
+
+                    shape:
+                    RoundedRectangleBorder(
+                      borderRadius:
+                      BorderRadius.circular(
+                        14,
+                      ),
+                    ),
+                  ),
+
+                  child:
+                  const Text('Close'),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }

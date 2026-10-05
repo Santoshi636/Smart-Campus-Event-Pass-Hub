@@ -34,13 +34,10 @@ class _SplashScreenState extends State<SplashScreen>
 
     _controller.forward();
 
-    // 2. Auto-navigate to HomeScreen after 3 seconds
+    // 2. Auto-navigate to Home after 10 seconds
     Future.delayed(const Duration(seconds: 10), () {
       if (mounted) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const HomeScreen()),
-        );
+        Navigator.pushReplacementNamed(context, '/home');
       }
     });
   }
@@ -57,6 +54,7 @@ class _SplashScreenState extends State<SplashScreen>
       body: Container(
         width: double.infinity,
         height: double.infinity,
+
         // Gradient Background
         decoration: const BoxDecoration(
           gradient: LinearGradient(
@@ -69,6 +67,7 @@ class _SplashScreenState extends State<SplashScreen>
             end: Alignment.bottomCenter,
           ),
         ),
+
         child: Stack(
           children: [
             // Decorative background glowing blur circles
@@ -84,6 +83,7 @@ class _SplashScreenState extends State<SplashScreen>
                 ),
               ),
             ),
+
             Positioned(
               bottom: -80,
               left: -50,
@@ -101,21 +101,27 @@ class _SplashScreenState extends State<SplashScreen>
             Center(
               child: FadeTransition(
                 opacity: _fadeAnimation,
+
                 child: ScaleTransition(
                   scale: _scaleAnimation,
+
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
+
                     children: [
                       // Animated Glassmorphism Icon Container
                       Container(
                         padding: const EdgeInsets.all(24),
+
                         decoration: BoxDecoration(
                           color: Colors.white.withOpacity(0.15),
                           shape: BoxShape.circle,
+
                           border: Border.all(
                             color: Colors.white.withOpacity(0.3),
                             width: 1.5,
                           ),
+
                           boxShadow: [
                             BoxShadow(
                               color: Colors.black.withOpacity(0.2),
@@ -124,17 +130,20 @@ class _SplashScreenState extends State<SplashScreen>
                             ),
                           ],
                         ),
+
                         child: const Icon(
                           Icons.festival_rounded,
                           size: 70,
                           color: Colors.white,
                         ),
                       ),
+
                       const SizedBox(height: 28),
 
                       // Main Title
                       const Text(
                         "Smart Campus Hub",
+
                         style: TextStyle(
                           fontSize: 28,
                           fontWeight: FontWeight.bold,
@@ -142,24 +151,29 @@ class _SplashScreenState extends State<SplashScreen>
                           letterSpacing: 1.1,
                         ),
                       ),
+
                       const SizedBox(height: 8),
 
                       // Subtitle / Tagline
                       Text(
                         "Discover & Register Campus Events Easily",
+
                         style: TextStyle(
                           fontSize: 14,
                           color: Colors.white.withOpacity(0.8),
                           fontWeight: FontWeight.w400,
                         ),
                       ),
+
                       const SizedBox(height: 48),
 
                       // Custom Sleek Loader Bar
                       SizedBox(
                         width: 120,
+
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(10),
+
                           child: const LinearProgressIndicator(
                             color: Colors.amberAccent,
                             backgroundColor: Colors.white24,
@@ -178,9 +192,11 @@ class _SplashScreenState extends State<SplashScreen>
               bottom: 30,
               left: 0,
               right: 0,
+
               child: Center(
                 child: Text(
                   "v1.0.0 • Powered by Smart Campus",
+
                   style: TextStyle(
                     color: Colors.white.withOpacity(0.5),
                     fontSize: 12,
